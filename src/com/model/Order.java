@@ -81,5 +81,7 @@ public class Order implements Comparable<Order> {
         return getoID().compareTo(o.getoID());
     }
     
-    
+    public void importOrder(){
+        
+    }
 }

@@ -4,6 +4,8 @@
  */
 package com.model;
 
+import my.util.Validate;
+
 /**
  *
  * @author AnataArisa
@@ -63,5 +65,16 @@ public class Customer implements Comparable<Customer> {
     @Override
     public int compareTo(Customer o) {
         return this.getcID().compareTo(o.getcID());
+    }
+    
+    public void importCustomer(){
+        setcName(Validate.stringValidation("Enter customer name: "));
+        setcAddress(Validate.stringValidation("Enter customer address: "));
+        setcPhone(Validate.phoneValidation("Enter customer phonenumber: "));
+    }
+    
+    @Override
+    public String toString(){
+        return getcID() + " | " + getcName()+ " | " + getcAddress() + " | " + getcPhone();
     }
 }

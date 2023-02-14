@@ -4,6 +4,8 @@
  */
 package com.model;
 
+import my.util.Validate;
+
 /**
  *
  * @author AnataArisa
@@ -73,5 +75,12 @@ public class Product implements Comparable<Product> {
     @Override
     public int compareTo(Product o) {
         return this.pID.compareTo(o.getpID());
+    }
+    
+    public void importProduct(){
+        setpName(Validate.stringValidation("Enter product name: "));
+        setOrigin(Validate.stringValidation("Enter product origin: "));
+        setUnit(Validate.stringValidation("Enter product unit: "));
+        setPrice();
     }
 }
