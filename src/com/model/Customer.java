@@ -8,7 +8,7 @@ package com.model;
  *
  * @author AnataArisa
  */
-public class Customer {
+public class Customer implements Comparable<Customer> {
     private String cID;
     private String cName;
     private String cAddress;
@@ -19,6 +19,13 @@ public class Customer {
         this.cName = cName;
         this.cAddress = cAddress;
         this.cPhone = cPhone;
+    }
+    public Customer(){
+        
+    }
+    
+    public Customer(String ID){
+        this.cID = ID;
     }
 
     public String getcID() {
@@ -52,6 +59,9 @@ public class Customer {
     public void setcPhone(String cPhone) {
         this.cPhone = cPhone;
     }
-    
-    
+
+    @Override
+    public int compareTo(Customer o) {
+        return this.getcID().compareTo(o.getcID());
+    }
 }

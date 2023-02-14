@@ -8,7 +8,7 @@ package com.model;
  *
  * @author AnataArisa
  */
-public class Order {
+public class Order implements Comparable<Order> {
     private String oID;
     private String cID;
     private String pID;
@@ -23,6 +23,9 @@ public class Order {
         this.orderQuantity = orderQuantity;
         this.orderDate = orderDate;
         this.status = status;
+    }
+    public Order(String ID){
+        this.oID = ID;
     }
 
     public String getoID() {
@@ -71,6 +74,11 @@ public class Order {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    @Override
+    public int compareTo(Order o) {
+        return getoID().compareTo(o.getoID());
     }
     
     

@@ -8,7 +8,7 @@ package com.model;
  *
  * @author AnataArisa
  */
-public class Product {
+public class Product implements Comparable<Product> {
     private String pID;
     private String pName;
     private String unit;
@@ -68,5 +68,10 @@ public class Product {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    @Override
+    public int compareTo(Product o) {
+        return this.pID.compareTo(o.getpID());
     }
 }

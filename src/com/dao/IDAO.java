@@ -4,10 +4,19 @@
  */
 package com.dao;
 
+import java.util.List;
+
 /**
  *
  * @author AnataArisa
  */
-public class IDAO {
-    
+public interface IDAO<T> {
+    //CRUD
+    public List<T> getAll();
+    public boolean create(T data);
+    public T read(T data);
+    public T read(String ID);
+    public boolean update(T data);
+    public T delete(T data);
+    public T delete(String ID);
 }
