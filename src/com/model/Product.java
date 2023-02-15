@@ -81,6 +81,11 @@ public class Product implements Comparable<Product> {
         setpName(Validate.stringValidation("Enter product name: "));
         setOrigin(Validate.stringValidation("Enter product origin: "));
         setUnit(Validate.stringValidation("Enter product unit: "));
-        setPrice();
+        setPrice(Validate.intValidation("Enter product price: ", 1));
+    }
+    
+    @Override
+    public String toString(){
+        return getpID() + " | " + getpName() + " | " +getOrigin()+ " | " +getUnit()+ " | " +getPrice();
     }
 }

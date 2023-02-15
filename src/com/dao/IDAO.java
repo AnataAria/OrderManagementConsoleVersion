@@ -19,4 +19,5 @@ public interface IDAO<T> {
     public boolean update(T data);
     public T delete(T data);
     public T delete(String ID);
+    public void traverser();
 }

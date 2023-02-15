@@ -4,6 +4,8 @@
  */
 package com.model;
 
+import my.util.Validate;
+
 /**
  *
  * @author AnataArisa
@@ -82,6 +84,13 @@ public class Order implements Comparable<Order> {
     }
     
     public void importOrder(){
-        
+        setOrderQuantity(Validate.intValidation("Enter quantity: ", 1));
+        setOrderDate(Validate.dateTimeValidate("Enter order date: ", "dd-MM-yyyy"));
+        setStatus(Validate.booleanValidation("Enter status: "));
+    }
+    
+    @Override
+    public String toString(){
+        return getoID()+ " | " +getcID()+ " | " +getpID()+getOrderQuantity()+ " | " +getOrderDate();
     }
 }

@@ -3,13 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/com/model/Customer.java</file>
-            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/my/util/Validate.java</file>
-            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/com/model/Product.java</file>
-            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/com/menu/Menu.java</file>
+            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/my/util/FileMangement.java</file>
             <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/com/main/Main.java</file>
-            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/com/model/Order.java</file>
-            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/com/controler/StoreManagement.java</file>
+            <file>file:/E:/FPT/SPRING%202023/LAB211/Assignment/OrderManagement/src/my/util/IFileManage.java</file>
         </group>
     </open-files>
 </project-private>

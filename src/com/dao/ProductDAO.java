@@ -13,26 +13,33 @@ import java.util.List;
  * @author AnataArisa
  */
 public class ProductDAO implements IDAO<Product> {
-    
+
     private List<Product> productList;
-    
-    public ProductDAO(){
+
+    public ProductDAO() {
         productList = new ArrayList();
     }
 
     @Override
     public List<Product> getAll() {
-        if(productList.isEmpty()) return null;
+        if (productList.isEmpty()) {
+            return null;
+        }
         return productList;
     }
 
     @Override
     public boolean create(Product data) {
-        if(data == null) return false;
-        if(getAll() == null) this.productList.add(data);
-        else{
-            for(Product product : getAll()){
-                if(data.compareTo(product) == 0) return false;
+        if (data == null) {
+            return false;
+        }
+        if (getAll() == null) {
+            this.productList.add(data);
+        } else {
+            for (Product product : getAll()) {
+                if (data.compareTo(product) == 0) {
+                    return false;
+                }
             }
             getAll().add(data);
         }
@@ -41,10 +48,14 @@ public class ProductDAO implements IDAO<Product> {
 
     @Override
     public Product read(Product data) {
-        if(data == null) return null;
-        if(getAll() == null) return null;
-        for(Product product: getAll()){
-            if(product.compareTo(data) == 0){
+        if (data == null) {
+            return null;
+        }
+        if (getAll() == null) {
+            return null;
+        }
+        for (Product product : getAll()) {
+            if (product.compareTo(data) == 0) {
                 return product;
             }
         }
@@ -59,10 +70,14 @@ public class ProductDAO implements IDAO<Product> {
 
     @Override
     public boolean update(Product data) {
-        if(data == null) return false;
-        if(getAll() == null) return false;
-        for(Product product: getAll()){
-            if(product.compareTo(data) == 0){
+        if (data == null) {
+            return false;
+        }
+        if (getAll() == null) {
+            return false;
+        }
+        for (Product product : getAll()) {
+            if (product.compareTo(data) == 0) {
                 product.setpName(data.getpName());
                 product.setOrigin(data.getOrigin());
                 product.setPrice(data.getPrice());
@@ -75,11 +90,15 @@ public class ProductDAO implements IDAO<Product> {
 
     @Override
     public Product delete(Product data) {
-        if(data == null) return null;
-        if(getAll() == null) return null;
-        for(int i = 0; i < getAll().size(); i++){
+        if (data == null) {
+            return null;
+        }
+        if (getAll() == null) {
+            return null;
+        }
+        for (int i = 0; i < getAll().size(); i++) {
             Product temp = getAll().get(i);
-            if(temp.compareTo(data) == 0){
+            if (temp.compareTo(data) == 0) {
                 getAll().remove(i);
                 return temp;
             }
@@ -89,8 +108,25 @@ public class ProductDAO implements IDAO<Product> {
 
     @Override
     public Product delete(String ID) {
-        if(ID == null || ID.isEmpty()) return null;
+        if (ID == null || ID.isEmpty()) {
+            return null;
+        }
         Product temp = new Product(ID);
         return delete(temp);
+    }
+
+    @Override
+    public void traverser() {
+        if (getAll() == null) {
+            System.out.println("Empty list !!!");
+        }
+        for (Product product : getAll()) {
+            visit(product);
+        }
+        System.out.println("--- This is the end of the list ---");
+    }
+
+    public void visit(Object data) {
+        System.out.println(data);
     }
 }

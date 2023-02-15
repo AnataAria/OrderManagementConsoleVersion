@@ -98,4 +98,19 @@ public class OrderDAO implements IDAO<Order> {
         return delete(new Order(ID));
     }
     
+    @Override
+    public void traverser() {
+        if (getAll() == null) {
+            System.out.println("Empty list !!!");
+        }
+        for (Order order : getAll()) {
+            visit(order);
+        }
+        System.out.println("--- This is the end of the list ---");
+    }
+
+    public void visit(Object data) {
+        System.out.println(data);
+    }
+    
 }
