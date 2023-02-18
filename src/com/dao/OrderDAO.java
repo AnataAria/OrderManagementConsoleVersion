@@ -102,6 +102,7 @@ public class OrderDAO implements IDAO<Order> {
     public void traverser() {
         if (getAll() == null) {
             System.out.println("Empty list !!!");
+            return;
         }
         for (Order order : getAll()) {
             visit(order);

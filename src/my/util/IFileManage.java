@@ -4,10 +4,16 @@
  */
 package my.util;
 
+import java.util.List;
+
 /**
  *
  * @author AnataArisa
  */
-public interface IFileManage {
-    
+public interface IFileManage<T> {
+    public void setPath(String path);
+    public List<T> getList();
+    public void setList(List<T> list);
+    public boolean loadFromFile();
+    public boolean uploadToFile();
 }

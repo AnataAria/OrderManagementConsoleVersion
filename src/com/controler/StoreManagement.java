@@ -7,6 +7,8 @@ package com.controler;
 import com.dao.*;
 import com.model.*;
 import java.util.Scanner;
+import my.util.FileMangement;
+import my.util.IFileManage;
 import my.util.Validate;
 
 /**
@@ -93,11 +95,57 @@ public class StoreManagement {
             }
         }
     }
-    
-    public void updateProduct(){
+
+    public void searchProduct() {
+        Product temp = (Product) search("Enter product ID", "P[\\d]{3}");
+        if (temp != null) {
+            System.out.println(temp);
+        }
+    }
+
+    public void searchOrder() {
+        Order temp = (Order) search("Enter order ID: ", "O[\\d]{3}");
+        if (temp != null) {
+            System.out.println(temp);
+        }
+    }
+
+    public void searchCustomer() {
+        Customer temp = (Customer) search("Enter customer ID: ", "C[\\d]{3}");
+        if (temp != null) {
+            System.out.println(temp);
+        }
+    }
+
+    private Object search(String message, String regex) {
+        String ID = Validate.regexValidate(regex, message);
+        if (regex.charAt(0) == 'C') {
+            Customer customer = cDAO.read(ID);
+            if (customer != null) {
+                return customer;
+            }
+        } else {
+            if (regex.charAt(0) == 'P') {
+                Product product = pDAO.read(ID);
+                if (product != null) {
+                    return product;
+                }
+            } else {
+                if (regex.charAt(0) == 'O') {
+                    Order order = oDAO.read(ID);
+                    if (order != null) {
+                        return order;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void updateProduct() {
         String ID = Validate.regexValidate("P[\\d]{3}", "Enter product ID: ");
         Product temp = pDAO.read(ID);
-        if(temp != null){
+        if (temp != null) {
             System.out.println(temp);
             temp.importProduct();
             pDAO.update(temp);
@@ -105,16 +153,187 @@ public class StoreManagement {
             System.out.println(temp);
         }
     }
-    
-    public void updateCustomer(){
+
+    public void updateCustomer() {
         String ID = Validate.regexValidate("C[\\d]{3}", "Enter customer ID: ");
         Customer temp = cDAO.read(ID);
-        if(temp != null){
+        if (temp != null) {
             System.out.println(temp);
             temp.importCustomer();
             cDAO.update(temp);
             System.out.println("Update product with CID: " + temp.getcID() + " Success !!!");
             System.out.println(temp);
         }
+    }
+
+    public void updateOrder() {
+        String ID = Validate.regexValidate("O[\\d]{3}", "Enter order ID: ");
+        Order temp = oDAO.read(ID);
+        if (temp != null) {
+            System.out.println(temp);
+            ID = Validate.regexValidateCanSkip("C[\\d]{3}", "Enter customer ID: ");
+            if (ID != null) {
+                temp.setcID(ID);
+                ID = Validate.regexValidateCanSkip("P[\\d]{3}", "Enter product ID");
+                if (ID != null) {
+                    temp.setpID(ID);
+                    int quantity = Validate.intValidationCanSkip("Enter order quantity: ", 1, Integer.MAX_VALUE);
+                    if (quantity != -1) {
+                        temp.setOrderQuantity(quantity);
+                        String date;
+                        if ((date = Validate.dateTimeValidateCanSkip("Enter order date: ", "dd-MM-YYYY")) != null) {
+                            temp.setOrderDate(date);
+                            temp.setStatus(Validate.booleanValidation("Enter status: "));
+                            oDAO.update(temp);
+                        } else {
+                            System.out.println("Skiped !!!");
+                        }
+                        temp.setStatus(true);
+                    } else {
+                        System.out.println("Skiped !!!");
+                    }
+                } else {
+                    System.out.println("Skiped !!!");
+                }
+            } else {
+                System.out.println("Skiped !!!");
+            }
+        }
+    }
+
+    public void deleteCustomer() {
+        Customer temp = (Customer) search("Enter customer ID", "C[\\d]{3}");
+        if (temp != null) {
+            cDAO.delete(temp);
+            System.out.println("Delete successful !!!");
+            System.out.println(temp);
+        }
+    }
+
+    public void deleteProduct() {
+
+    }
+
+    public void deleteOrder() {
+        Order order = (Order) search("Enter order ID: ", "O[\\d]{3}");
+        if (order != null) {
+            if (oDAO.delete(order) != null) {
+                System.out.println("Delete successfull");
+            }
+        }
+    }
+
+    public void readOrderFile() {
+        IFileManage<Order> orderManage = new FileMangement();
+        orderManage.loadFromFile();
+        if (oDAO.getAll() == null) {
+            for (Order order : orderManage.getList()) {
+                oDAO.create(order);
+            }
+            return ;
+        }
+        for (Order order : orderManage.getList()) {
+            if (!isOrderExist(order.getoID())) {
+                oDAO.create(order);
+            }
+        }
+    }
+
+    public void readProductFile() {
+        IFileManage<Product> productManage = new FileMangement();
+        productManage.loadFromFile();
+        if (pDAO.getAll() == null) {
+            for (Product product : productManage.getList()) {
+                pDAO.create(product);
+            }
+            return;
+        }
+        for (Product product : productManage.getList()) {
+            if (!isProductExist(product.getpID())) {
+                pDAO.create(product);
+            }
+        }
+    }
+
+    public void readCustomerFile() {
+        IFileManage<Customer> customerManage = new FileMangement();
+        customerManage.loadFromFile();
+        if(cDAO.getAll() == null){
+            for(Customer customer: customerManage.getList()){
+                cDAO.create(customer);
+            }
+            return;
+        }
+        for(Customer customer: customerManage.getList()){
+            if(!isCustomerExist(customer.getcID())){
+                cDAO.create(customer);
+            }
+        }
+    }
+    
+    public void saveOrderToFile(){
+        readOrderFile();
+        if(oDAO.getAll() == null) return ;
+        IFileManage<Order> order =  new FileMangement();
+        order.setPath("");
+        order.setList(oDAO.getAll());
+        order.uploadToFile();
+    }
+    
+    public void saveCustomerToFile(){
+        readCustomerFile();
+        if(cDAO.getAll() == null) return ;
+        IFileManage<Customer> customer = new FileMangement();
+        customer.setPath("");
+        customer.setList(cDAO.getAll());
+        customer.uploadToFile();
+    }
+    
+    public void saveProductToFile(){
+        readProductFile();
+        if(pDAO.getAll() == null) return ;
+        IFileManage<Product> product =  new FileMangement();
+        product.setPath("");
+        product.setList(pDAO.getAll());
+        product.uploadToFile();
+    }
+
+    public void traverserCustomer() {
+        cDAO.traverser();
+    }
+
+    public void traverserOrder() {
+        oDAO.traverser();
+    }
+
+    public void traverserProduct() {
+        pDAO.traverser();
+    }
+    
+    public void traverserPendingOrder(){
+        if(oDAO.getAll() == null){
+            System.out.println("Empty list");
+            return ;
+        }
+        for(Order order: oDAO.getAll()){
+            if(order.isStatus() == false){
+                System.out.print(order.getoID()+ " | " +order.getcID()+ " | " +order.getpID()+ "|" +order.getOrderQuantity()+ " | " +order.getOrderDate()+"|");
+                System.out.println(order.isStatus() ? "Delivered" : "Not Delivered");
+            }
+        }
+    }
+    private boolean isCustomerExist(String ID) {
+        Customer customer = cDAO.read(ID);
+        return customer != null;
+    }
+
+    private boolean isOrderExist(String ID) {
+        Order order = oDAO.read(ID);
+        return order != null;
+    }
+
+    private boolean isProductExist(String ID) {
+        Product product = pDAO.read(ID);
+        return product != null;
     }
 }

@@ -121,6 +121,7 @@ public class CustomerDAO implements IDAO<Customer> {
     public void traverser() {
         if (getAll() == null) {
             System.out.println("Empty list !!!");
+            return;
         }
         for (Customer customer : getAll()) {
             visit(customer);

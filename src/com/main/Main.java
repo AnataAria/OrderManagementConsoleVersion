@@ -13,7 +13,7 @@ import com.menu.Menu;
  */
 public class Main {
 
-    private static StoreManagement sm = new StoreManagement();
+    private static final StoreManagement sm = new StoreManagement();
 
     public static void main(String[] args) {
         Menu menu = new Menu();
@@ -22,31 +22,34 @@ public class Main {
         String[] option = {"List all Products", "List all Customers", "Search a Customer based on his/her ID", "Add a Customer", "Update a Customer", "Save Customers to the file, named customers.txt", "List all Orders in ascending order of Customer name", "List all pending Orders", "Add an Order", "Update an Order", "Save Orders to file, named orders.txt", "Quit"};
         menu.add(option);
         orderMenu.add(subOption);
+        sm.readCustomerFile();
+        sm.readOrderFile();
+        sm.readProductFile();
         boolean mainCheck = true;
         do {
             int choice = menu.printMenu();
             switch(choice){
                 case 1:
-                    
+                    sm.traverserProduct();
                     break;
                 case 2:
-                    
+                    sm.traverserCustomer();
                     break;
                     
                 case 3:
-                    
+                    sm.searchCustomer();
                     break;
                     
                 case 4:
-                    
+                    sm.createCustomer();
                     break;
                     
                 case 5:
-                    
+                    sm.updateCustomer();
                     break;
                     
                 case 6:
-                    
+                    sm.saveCustomerToFile();
                     break;
                     
                 case 7:
@@ -58,7 +61,7 @@ public class Main {
                     break;
                     
                 case 9:
-                    
+                    sm.createOrder();
                     break;
                     
                 case 10:
@@ -67,11 +70,11 @@ public class Main {
                         int subChoice = orderMenu.printMenu();
                         switch(subChoice){
                             case 1:
-                                
+                                sm.updateOrder();
                                 break;
                                 
                             case 2:
-                                
+                                sm.deleteOrder();
                                 break;
                                 
                             case 3:
@@ -83,7 +86,7 @@ public class Main {
                     break;
                     
                 case 11:
-                    
+                    sm.saveOrderToFile();
                     break;
                     
                 case 12:

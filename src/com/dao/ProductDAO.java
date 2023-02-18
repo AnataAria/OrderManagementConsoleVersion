@@ -119,6 +119,7 @@ public class ProductDAO implements IDAO<Product> {
     public void traverser() {
         if (getAll() == null) {
             System.out.println("Empty list !!!");
+            return;
         }
         for (Product product : getAll()) {
             visit(product);

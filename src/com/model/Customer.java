@@ -4,13 +4,14 @@
  */
 package com.model;
 
+import java.util.StringTokenizer;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Customer implements Comparable<Customer> {
+public class Customer implements Comparable<Customer>,IFileObject{
     private String cID;
     private String cName;
     private String cAddress;
@@ -76,5 +77,13 @@ public class Customer implements Comparable<Customer> {
     @Override
     public String toString(){
         return getcID() + " | " + getcName()+ " | " + getcAddress() + " | " + getcPhone();
+    }
+
+    @Override
+    public void fileToObject(StringTokenizer a) {
+        setcID(a.nextToken());
+        setcName(a.nextToken());
+        setcAddress(a.nextToken());
+        setcPhone(a.nextToken());
     }
 }

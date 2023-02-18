@@ -4,13 +4,14 @@
  */
 package com.model;
 
+import java.util.StringTokenizer;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Product implements Comparable<Product> {
+public class Product implements Comparable<Product>,IFileObject {
     private String pID;
     private String pName;
     private String unit;
@@ -87,5 +88,14 @@ public class Product implements Comparable<Product> {
     @Override
     public String toString(){
         return getpID() + " | " + getpName() + " | " +getOrigin()+ " | " +getUnit()+ " | " +getPrice();
+    }
+
+    @Override
+    public void fileToObject(StringTokenizer a) {
+        setpID(a.nextToken());
+        setpName(a.nextToken());
+        setOrigin(a.nextToken());
+        setUnit(a.nextToken());
+        setPrice(Integer.parseInt(a.nextToken()));
     }
 }

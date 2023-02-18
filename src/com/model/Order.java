@@ -4,13 +4,14 @@
  */
 package com.model;
 
+import java.util.StringTokenizer;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Order implements Comparable<Order> {
+public class Order implements Comparable<Order>,IFileObject {
     private String oID;
     private String cID;
     private String pID;
@@ -91,6 +92,16 @@ public class Order implements Comparable<Order> {
     
     @Override
     public String toString(){
-        return getoID()+ " | " +getcID()+ " | " +getpID()+getOrderQuantity()+ " | " +getOrderDate();
+        return getoID()+ " | " +getcID()+ " | " +getpID()+ "|" +getOrderQuantity()+ " | " +getOrderDate()+"|"+isStatus();
+    }
+
+    @Override
+    public void fileToObject(StringTokenizer a) {
+        setoID(a.nextToken());
+        setcID(a.nextToken());
+        setpID(a.nextToken());
+        setOrderQuantity(Integer.parseInt(a.nextToken()));
+        setOrderDate(a.nextToken());
+        setStatus(Boolean.parseBoolean(a.nextToken()));
     }
 }
