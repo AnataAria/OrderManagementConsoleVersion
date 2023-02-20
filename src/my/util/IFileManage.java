@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
 package my.util;
-
 import java.util.List;
 
 /**
  *
  * @author AnataArisa
+ * @param <T>
  */
 public interface IFileManage<T> {
     public void setPath(String path);

@@ -11,7 +11,7 @@ import my.util.Validate;
  *
  * @author AnataArisa
  */
-public class Customer implements Comparable<Customer>,IFileObject{
+public class Customer implements Comparable<Customer> {
     private String cID;
     private String cName;
     private String cAddress;
@@ -28,7 +28,7 @@ public class Customer implements Comparable<Customer>,IFileObject{
     }
     
     public Customer(String ID){
-        this.cID = ID;
+        this.cID = ID.trim().toUpperCase();
     }
 
     public String getcID() {
@@ -36,7 +36,7 @@ public class Customer implements Comparable<Customer>,IFileObject{
     }
 
     public void setcID(String cID) {
-        this.cID = cID;
+        this.cID = cID.trim().toUpperCase();
     }
 
     public String getcName() {
@@ -65,7 +65,7 @@ public class Customer implements Comparable<Customer>,IFileObject{
 
     @Override
     public int compareTo(Customer o) {
-        return this.getcID().compareTo(o.getcID());
+        return this.getcID().trim().compareTo(o.getcID().trim());
     }
     
     public void importCustomer(){
@@ -77,13 +77,5 @@ public class Customer implements Comparable<Customer>,IFileObject{
     @Override
     public String toString(){
         return getcID() + " | " + getcName()+ " | " + getcAddress() + " | " + getcPhone();
-    }
-
-    @Override
-    public void fileToObject(StringTokenizer a) {
-        setcID(a.nextToken());
-        setcName(a.nextToken());
-        setcAddress(a.nextToken());
-        setcPhone(a.nextToken());
     }
 }

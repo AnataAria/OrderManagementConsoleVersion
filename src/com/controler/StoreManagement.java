@@ -225,12 +225,13 @@ public class StoreManagement {
 
     public void readOrderFile() {
         IFileManage<Order> orderManage = new FileMangement();
+        orderManage.setPath("src\\data\\order.txt");
         orderManage.loadFromFile();
         if (oDAO.getAll() == null) {
             for (Order order : orderManage.getList()) {
                 oDAO.create(order);
             }
-            return ;
+            return;
         }
         for (Order order : orderManage.getList()) {
             if (!isOrderExist(order.getoID())) {
@@ -241,6 +242,7 @@ public class StoreManagement {
 
     public void readProductFile() {
         IFileManage<Product> productManage = new FileMangement();
+        productManage.setPath("src\\data\\product.txt");
         productManage.loadFromFile();
         if (pDAO.getAll() == null) {
             for (Product product : productManage.getList()) {
@@ -257,43 +259,50 @@ public class StoreManagement {
 
     public void readCustomerFile() {
         IFileManage<Customer> customerManage = new FileMangement();
+        customerManage.setPath("src\\data\\customer.txt");
         customerManage.loadFromFile();
-        if(cDAO.getAll() == null){
-            for(Customer customer: customerManage.getList()){
+        if (cDAO.getAll() == null) {
+            for (Customer customer : customerManage.getList()) {
                 cDAO.create(customer);
             }
             return;
         }
-        for(Customer customer: customerManage.getList()){
-            if(!isCustomerExist(customer.getcID())){
+        for (Customer customer : customerManage.getList()) {
+            if (!isCustomerExist(customer.getcID())) {
                 cDAO.create(customer);
             }
         }
     }
-    
-    public void saveOrderToFile(){
+
+    public void saveOrderToFile() {
         readOrderFile();
-        if(oDAO.getAll() == null) return ;
-        IFileManage<Order> order =  new FileMangement();
-        order.setPath("");
+        if (oDAO.getAll() == null) {
+            return;
+        }
+        IFileManage<Order> order = new FileMangement();
+        order.setPath("src\\data\\order.txt");
         order.setList(oDAO.getAll());
         order.uploadToFile();
     }
-    
-    public void saveCustomerToFile(){
+
+    public void saveCustomerToFile() {
         readCustomerFile();
-        if(cDAO.getAll() == null) return ;
+        if (cDAO.getAll() == null) {
+            return;
+        }
         IFileManage<Customer> customer = new FileMangement();
-        customer.setPath("");
+        customer.setPath("src\\data\\customer.txt");
         customer.setList(cDAO.getAll());
         customer.uploadToFile();
     }
-    
-    public void saveProductToFile(){
+
+    public void saveProductToFile() {
         readProductFile();
-        if(pDAO.getAll() == null) return ;
-        IFileManage<Product> product =  new FileMangement();
-        product.setPath("");
+        if (pDAO.getAll() == null) {
+            return;
+        }
+        IFileManage<Product> product = new FileMangement();
+        product.setPath("src\\data\\product.txt");
         product.setList(pDAO.getAll());
         product.uploadToFile();
     }
@@ -309,19 +318,20 @@ public class StoreManagement {
     public void traverserProduct() {
         pDAO.traverser();
     }
-    
-    public void traverserPendingOrder(){
-        if(oDAO.getAll() == null){
+
+    public void traverserPendingOrder() {
+        if (oDAO.getAll() == null) {
             System.out.println("Empty list");
-            return ;
+            return;
         }
-        for(Order order: oDAO.getAll()){
-            if(order.isStatus() == false){
-                System.out.print(order.getoID()+ " | " +order.getcID()+ " | " +order.getpID()+ "|" +order.getOrderQuantity()+ " | " +order.getOrderDate()+"|");
+        for (Order order : oDAO.getAll()) {
+            if (order.isStatus() == false) {
+                System.out.print(order.getoID() + " | " + order.getcID() + " | " + order.getpID() + "|" + order.getOrderQuantity() + " | " + order.getOrderDate() + "|");
                 System.out.println(order.isStatus() ? "Delivered" : "Not Delivered");
             }
         }
     }
+
     private boolean isCustomerExist(String ID) {
         Customer customer = cDAO.read(ID);
         return customer != null;
@@ -335,5 +345,64 @@ public class StoreManagement {
     private boolean isProductExist(String ID) {
         Product product = pDAO.read(ID);
         return product != null;
+    }
+
+    private void sortProduct() {
+        if (pDAO.getAll() == null) {
+            return;
+        }
+        int size = pDAO.getAll().size();
+        for (int i = 0; i < size; i++) {
+            for (int j = i + 1; j < size; j++) {
+                Product o1 = pDAO.getAll().get(i);
+                Product o2 = pDAO.getAll().get(j);
+                if (o1.getpID().compareTo(o2.getpID()) == 1) {
+                    pDAO.getAll().set(i, o2);
+                    pDAO.getAll().set(j, o1);
+                }
+            }
+        }
+    }
+
+    private void sortOrderByName() {
+        if (oDAO.getAll() == null) {
+            return;
+        }
+        int size = oDAO.getAll().size();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Order o1 = oDAO.getAll().get(i);
+                Order o2 = oDAO.getAll().get(j);
+                Customer co1 = cDAO.read(o1.getcID());
+                Customer co2 = cDAO.read(o2.getcID());
+                if (co1 != null && co2 != null) {
+                    if(co1.getcName().compareTo(co2.getcName()) == 1){
+                        oDAO.getAll().set(i, o2);
+                        oDAO.getAll().set(j, o1);
+                    }
+                }
+            }
+        }
+    }
+
+    private void sortCustomer() {
+        if (cDAO.getAll() == null) {
+            return;
+        }
+        int size = cDAO.getAll().size();
+        for (int i = 0; i < size; i++) {
+            for (int j = i + 1; j < size; j++) {
+                Customer o1 = cDAO.getAll().get(i);
+                Customer o2 = cDAO.getAll().get(j);
+                if (o1.getcID().compareTo(o2.getcID()) == 1) {
+                    cDAO.getAll().set(i, o2);
+                    cDAO.getAll().set(j, o1);
+                }
+            }
+        }
+    }
+
+    private void orderMenu(){
+        System.out.println("|Order ID \t| Customer name \t|Product ID \t|");
     }
 }

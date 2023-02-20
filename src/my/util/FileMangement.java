@@ -3,8 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package my.util;
-
-import com.model.IFileObject;
+import com.model.Customer;
+import com.model.Order;
+import com.model.Product;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  * @author AnataArisa
  * @param <T>
  */
-public class FileMangement<T extends IFileObject> implements IFileManage<T> {
+public class FileMangement<T> implements IFileManage<T> {
 
     private String filePath;
     private List<T> dataList = new ArrayList();
@@ -40,6 +41,7 @@ public class FileMangement<T extends IFileObject> implements IFileManage<T> {
 
     @Override
     public boolean loadFromFile() {
+        Handle handle = new Handle();
         File f = new File(filePath);
         FileReader fr = null;
         BufferedReader br = null;
@@ -49,7 +51,8 @@ public class FileMangement<T extends IFileObject> implements IFileManage<T> {
             String data;
             while ((data = br.readLine()) != null) {
                 StringTokenizer st = new StringTokenizer(data, "|");
-                add((T) new Object(), st);
+                T temp = handle.fileToObject(st);
+                if(temp != null) dataList.add(temp);
             }
             return true;
         } catch (FileNotFoundException e) {
@@ -58,11 +61,11 @@ public class FileMangement<T extends IFileObject> implements IFileManage<T> {
             Logger.getLogger(FileMangement.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                if (fr != null) {
-                    fr.close();
-                }
                 if (br != null) {
                     br.close();
+                }
+                if (fr != null) {
+                    fr.close();
                 }
             } catch (IOException ex) {
                 Logger.getLogger(FileMangement.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,7 +83,7 @@ public class FileMangement<T extends IFileObject> implements IFileManage<T> {
             fw = new FileWriter(file);
             bw = new BufferedWriter(fw);
             for (T data : dataList) {
-                bw.write(data.toString() + "\n");
+                bw.write(data + "\n");
             }
             return true;
         } catch (FileNotFoundException e) {
@@ -89,11 +92,11 @@ public class FileMangement<T extends IFileObject> implements IFileManage<T> {
             Logger.getLogger(FileMangement.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                if (fw != null) {
-                    fw.close();
-                }
                 if (bw != null) {
                     bw.close();
+                }
+                if (fw != null) {
+                    fw.close();
                 }
             } catch (IOException ex) {
                 Logger.getLogger(FileMangement.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,18 +105,27 @@ public class FileMangement<T extends IFileObject> implements IFileManage<T> {
         return false;
     }
 
-    /**
-     *
-     * @param data
-     */
-    private void add(T data, StringTokenizer dataL) {
-        data.fileToObject(dataL);
-        dataList.add(data);
-    }
-
     @Override
     public void setList(List<T> list) {
         this.dataList = list;
+    }
+    
+    private class Handle{
+        public T fileToObject(StringTokenizer a){
+            if(a.countTokens() == 4){
+                Customer temp = new Customer(a.nextToken(),a.nextToken(),a.nextToken(),a.nextToken());
+                return (T)temp;
+            }
+            if(a.countTokens() == 5){
+                Product temp = new Product(a.nextToken(),a.nextToken(),a.nextToken(),a.nextToken(),Integer.parseInt(a.nextToken()));
+                return (T)temp;
+            }
+            if(a.countTokens() == 6){
+                Order temp = new Order(a.nextToken(),a.nextToken(),a.nextToken(),Integer.parseInt(a.nextToken()),a.nextToken(),Boolean.parseBoolean(a.nextToken()));
+                return (T) temp;
+            }
+            return null;
+        }
     }
 
 }

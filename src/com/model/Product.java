@@ -11,7 +11,7 @@ import my.util.Validate;
  *
  * @author AnataArisa
  */
-public class Product implements Comparable<Product>,IFileObject {
+public class Product implements Comparable<Product> {
     private String pID;
     private String pName;
     private String unit;
@@ -19,13 +19,13 @@ public class Product implements Comparable<Product>,IFileObject {
     private int price;
     
     public Product(String pID){
-        this.pID = pID;
+        this.pID = pID.toUpperCase().trim();
     }
     public Product(){
         
     }
 
-    public Product(String pID, String pName, String unit, String origin, int price) {
+    public Product(String pID, String pName, String origin, String unit, int price) {
         this.pID = pID;
         this.pName = pName;
         this.unit = unit;
@@ -38,7 +38,7 @@ public class Product implements Comparable<Product>,IFileObject {
     }
 
     public void setpID(String pID) {
-        this.pID = pID;
+        this.pID = pID.trim().toUpperCase();
     }
 
     public String getpName() {
@@ -89,13 +89,8 @@ public class Product implements Comparable<Product>,IFileObject {
     public String toString(){
         return getpID() + " | " + getpName() + " | " +getOrigin()+ " | " +getUnit()+ " | " +getPrice();
     }
-
-    @Override
-    public void fileToObject(StringTokenizer a) {
-        setpID(a.nextToken());
-        setpName(a.nextToken());
-        setOrigin(a.nextToken());
-        setUnit(a.nextToken());
-        setPrice(Integer.parseInt(a.nextToken()));
+    
+    public String visit(){
+        return getpID() + " | " + getpName() + " | " +getOrigin()+ " | " +getUnit()+ " | " +getPrice();
     }
 }

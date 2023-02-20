@@ -11,7 +11,7 @@ import my.util.Validate;
  *
  * @author AnataArisa
  */
-public class Order implements Comparable<Order>,IFileObject {
+public class Order implements Comparable<Order> {
     private String oID;
     private String cID;
     private String pID;
@@ -95,13 +95,4 @@ public class Order implements Comparable<Order>,IFileObject {
         return getoID()+ " | " +getcID()+ " | " +getpID()+ "|" +getOrderQuantity()+ " | " +getOrderDate()+"|"+isStatus();
     }
 
-    @Override
-    public void fileToObject(StringTokenizer a) {
-        setoID(a.nextToken());
-        setcID(a.nextToken());
-        setpID(a.nextToken());
-        setOrderQuantity(Integer.parseInt(a.nextToken()));
-        setOrderDate(a.nextToken());
-        setStatus(Boolean.parseBoolean(a.nextToken()));
-    }
 }
