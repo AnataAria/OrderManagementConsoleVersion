@@ -25,6 +25,7 @@ public class Main {
         sm.readCustomerFile();
         sm.readOrderFile();
         sm.readProductFile();
+        sm.startAutoSaving();
         boolean mainCheck = true;
         do {
             int choice = menu.printMenu();

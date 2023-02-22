@@ -6,7 +6,11 @@ package com.controler;
 
 import com.dao.*;
 import com.model.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my.util.FileMangement;
 import my.util.IFileManage;
 import my.util.Validate;
@@ -21,6 +25,9 @@ public class StoreManagement {
     private IDAO<Order> oDAO;
     private IDAO<Product> pDAO;
     private Scanner sc;
+    private Thread updateCFile;
+    private Thread updateOFile;
+    private Thread updatePFile;
 
     public StoreManagement() {
         cDAO = new CustomerDAO();
@@ -73,12 +80,12 @@ public class StoreManagement {
         Order order = oDAO.read(ID);
         if (order == null) {
             order = new Order(ID);
-            ID = Validate.regexValidate("C[\\d]{3}", "Enter Customer ID: ");
+            ID = returnCustomerID();
             Customer temp = cDAO.read(ID);
             if (temp != null) {
                 System.out.println(temp);
                 order.setcID(ID);
-                ID = Validate.regexValidate("P[\\d]{3}", "Enter publisher ID: ");
+                ID = returnProductID();
                 Product product = pDAO.read(ID);
                 if (product != null) {
                     System.out.println(product);
@@ -94,6 +101,30 @@ public class StoreManagement {
                 }
             }
         }
+    }
+    
+    private String returnCustomerID(){
+        do{
+        String ID = Validate.regexValidate("C[\\d]{3}", "Enter Customer ID: ");
+        if(isCustomerExist(ID)) return ID;
+        else System.out.println("Your customer ID is not in the database, please try again !!!");
+        }while(true);
+    }
+    
+    private String returnOrderID(){
+        do{
+            String ID = Validate.regexValidate("O[\\d]{3}", "Enter Order ID: ");
+            if(isOrderExist(ID)) return ID;
+            else System.out.println("Your order ID is not in the database, please try again !!!");
+        }while(true);
+    }
+    
+    private String returnProductID(){
+        do{
+            String ID = Validate.regexValidate("P[\\d]{3}", "Enter product ID: ");
+            if(isProductExist(ID)) return ID;
+            else System.out.println("Your product ID is not in the database, please try again !!!");
+        }while(true);
     }
 
     public void searchProduct() {
@@ -331,6 +362,10 @@ public class StoreManagement {
             }
         }
     }
+    
+    public void traverserAscOrder(){
+        List<Order> tempOrder = new ArrayList();
+    }
 
     private boolean isCustomerExist(String ID) {
         Customer customer = cDAO.read(ID);
@@ -363,28 +398,6 @@ public class StoreManagement {
             }
         }
     }
-
-    private void sortOrderByName() {
-        if (oDAO.getAll() == null) {
-            return;
-        }
-        int size = oDAO.getAll().size();
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                Order o1 = oDAO.getAll().get(i);
-                Order o2 = oDAO.getAll().get(j);
-                Customer co1 = cDAO.read(o1.getcID());
-                Customer co2 = cDAO.read(o2.getcID());
-                if (co1 != null && co2 != null) {
-                    if(co1.getcName().compareTo(co2.getcName()) == 1){
-                        oDAO.getAll().set(i, o2);
-                        oDAO.getAll().set(j, o1);
-                    }
-                }
-            }
-        }
-    }
-
     private void sortCustomer() {
         if (cDAO.getAll() == null) {
             return;
@@ -401,8 +414,66 @@ public class StoreManagement {
             }
         }
     }
+    private List<Order> sortAscOrder(){
+        List<Order> temp = new ArrayList();
+        temp.addAll(oDAO.getAll());
+        int size = temp.size();
+        for(int i = 0; i < size; i++){
+            for(int j = i; j < size; j++){
+                Order o1 = temp.get(i);
+                Order o2 = temp.get(j);
+                Customer co1 = cDAO.read(o1.getcID());
+                Customer co2 = cDAO.read(o2.getcID());
+                if(co1 != null || co2 != null)
+                if(co1.getcName().compareTo(co2.getcName()) == 1){
+                    temp.set(i, o2);
+                    temp.set(j, o1);
+                }
+            }
+        }
+        return temp;
+    }
 
     private void orderMenu(){
         System.out.println("|Order ID \t| Customer name \t|Product ID \t|");
+    }
+    
+    public void startAutoSaving(){
+        Runnable cSave;
+        Runnable oSave;
+        Runnable pSave;
+        cSave = () -> {
+            saveCustomerToFile();
+            System.out.println("Auto save complete !!!");
+            try {
+                Thread.currentThread().sleep(30000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        };
+        oSave = () ->{
+            saveOrderToFile();
+            System.out.println("Auto save complete !!!");
+            try{
+                Thread.currentThread().sleep(30000);
+            }catch(InterruptedException ex){
+                Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE,null,ex);
+            }
+        };
+        pSave = () -> {
+            saveProductToFile();
+            System.out.println("Auto save complete !!!");
+            try{
+                Thread.currentThread().sleep(30000);
+            }catch(InterruptedException ex){
+                Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE,null,ex);
+            }
+        };
+        updateCFile = new Thread(cSave);
+        updateOFile = new Thread(oSave);
+        updatePFile = new Thread(pSave);
+        updateCFile.start();
+        updateOFile.start();
+        updatePFile.start();
     }
 }
