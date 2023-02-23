@@ -28,7 +28,9 @@ public class StoreManagement {
     private Thread updateCFile;
     private Thread updateOFile;
     private Thread updatePFile;
-
+    private final String customerMenu = String.format("|%-6s|%-20s|%-20s|%-13s|", "ID","Name","Address", "Phone number");
+    private final String productMenu = String.format("|%-6s|%-20s|%-20s|%-13s|%-15s|","ID","Product name","Origin", "Unit", "Price");
+    private final String orderMenu = String.format("|%-6s|%-6s|%-6s|%-5s|%-13s|%-14s|", "OID","CID","PID","Quan","Date Order", "Status");
     public StoreManagement() {
         cDAO = new CustomerDAO();
         oDAO = new OrderDAO();
@@ -46,7 +48,8 @@ public class StoreManagement {
                 if (Validate.booleanValidation("Are you sure want to import this ?")) {
                     cDAO.create(customer);
                     System.out.println("Add Customer with ID " + ID + " :  Success!!! ");
-                    System.out.println(customer.toString());
+                    System.out.println(customerMenu);
+                    view(customer);
                     check = false;
                 } else {
                     System.out.println("Skiped !!!");
@@ -102,29 +105,38 @@ public class StoreManagement {
             }
         }
     }
-    
-    private String returnCustomerID(){
-        do{
-        String ID = Validate.regexValidate("C[\\d]{3}", "Enter Customer ID: ");
-        if(isCustomerExist(ID)) return ID;
-        else System.out.println("Your customer ID is not in the database, please try again !!!");
-        }while(true);
+
+    private String returnCustomerID() {
+        do {
+            String ID = Validate.regexValidate("C[\\d]{3}", "Enter Customer ID: ");
+            if (isCustomerExist(ID)) {
+                return ID;
+            } else {
+                System.out.println("Your customer ID is not in the database, please try again !!!");
+            }
+        } while (true);
     }
-    
-    private String returnOrderID(){
-        do{
+
+    private String returnOrderID() {
+        do {
             String ID = Validate.regexValidate("O[\\d]{3}", "Enter Order ID: ");
-            if(isOrderExist(ID)) return ID;
-            else System.out.println("Your order ID is not in the database, please try again !!!");
-        }while(true);
+            if (isOrderExist(ID)) {
+                return ID;
+            } else {
+                System.out.println("Your order ID is not in the database, please try again !!!");
+            }
+        } while (true);
     }
-    
-    private String returnProductID(){
-        do{
+
+    private String returnProductID() {
+        do {
             String ID = Validate.regexValidate("P[\\d]{3}", "Enter product ID: ");
-            if(isProductExist(ID)) return ID;
-            else System.out.println("Your product ID is not in the database, please try again !!!");
-        }while(true);
+            if (isProductExist(ID)) {
+                return ID;
+            } else {
+                System.out.println("Your product ID is not in the database, please try again !!!");
+            }
+        } while (true);
     }
 
     public void searchProduct() {
@@ -202,33 +214,64 @@ public class StoreManagement {
         Order temp = oDAO.read(ID);
         if (temp != null) {
             System.out.println(temp);
-            ID = Validate.regexValidateCanSkip("C[\\d]{3}", "Enter customer ID: ");
-            if (ID != null) {
-                temp.setcID(ID);
-                ID = Validate.regexValidateCanSkip("P[\\d]{3}", "Enter product ID");
-                if (ID != null) {
-                    temp.setpID(ID);
-                    int quantity = Validate.intValidationCanSkip("Enter order quantity: ", 1, Integer.MAX_VALUE);
-                    if (quantity != -1) {
-                        temp.setOrderQuantity(quantity);
-                        String date;
-                        if ((date = Validate.dateTimeValidateCanSkip("Enter order date: ", "dd-MM-YYYY")) != null) {
-                            temp.setOrderDate(date);
-                            temp.setStatus(Validate.booleanValidation("Enter status: "));
-                            oDAO.update(temp);
-                        } else {
-                            System.out.println("Skiped !!!");
-                        }
-                        temp.setStatus(true);
-                    } else {
-                        System.out.println("Skiped !!!");
-                    }
-                } else {
-                    System.out.println("Skiped !!!");
+            do {
+                traverserCustomer();
+                ID = Validate.regexValidateCanSkip("C[\\d]{3}", "Enter new customer ID: ");
+                if (ID.isEmpty()) {
+                    break;
                 }
-            } else {
-                System.out.println("Skiped !!!");
+                if (isCustomerExist(ID)) {
+                    temp.setcID(ID);
+                    break;
+                }
+            } while (true);
+            do {
+                ID = Validate.regexValidateCanSkip("P[\\d]{3}", "Enter new product ID: ");
+                if (ID.isEmpty()) {
+                    break;
+                }
+                if (isProductExist(ID)) {
+                    temp.setpID(ID);
+                    break;
+                }
+            } while (true);
+            int quantity = Validate.intValidationCanSkip("Enter new order quantity: ", 1, Integer.MAX_VALUE);
+            if (quantity != -1) {
+                temp.setOrderQuantity(quantity);
             }
+            String date;
+            if ((date = Validate.dateTimeValidateCanSkip("Enter new order date: ", "dd-MM-yyyy")) != null) {
+                temp.setOrderDate(date);
+            }
+            temp.setStatus(Validate.booleanValidation("Enter new status: "));
+            oDAO.update(temp);
+//            ID = Validate.regexValidateCanSkip("C[\\d]{3}", "Enter customer ID: ");
+//            if (ID != null) {
+//                temp.setcID(ID);
+//                ID = Validate.regexValidateCanSkip("P[\\d]{3}", "Enter product ID");
+//                if (ID != null) {
+//                    temp.setpID(ID);
+//                    int quantity = Validate.intValidationCanSkip("Enter order quantity: ", 1, Integer.MAX_VALUE);
+//                    if (quantity != -1) {
+//                        temp.setOrderQuantity(quantity);
+//                        String date;
+//                        if ((date = Validate.dateTimeValidateCanSkip("Enter order date: ", "dd-MM-YYYY")) != null) {
+//                            temp.setOrderDate(date);
+//                            temp.setStatus(Validate.booleanValidation("Enter status: "));
+//                            oDAO.update(temp);
+//                        } else {
+//                            System.out.println("Skiped !!!");
+//                        }
+//                        temp.setStatus(true);
+//                    } else {
+//                        System.out.println("Skiped !!!");
+//                    }
+//                } else {
+//                    System.out.println("Skiped !!!");
+//                }
+//            } else {
+//                System.out.println("Skiped !!!");
+//            }
         }
     }
 
@@ -337,18 +380,42 @@ public class StoreManagement {
         product.setList(pDAO.getAll());
         product.uploadToFile();
     }
-
-    public void traverserCustomer() {
-        cDAO.traverser();
+public void traverserCustomer(){
+    if(cDAO.getAll() == null){
+        System.out.println("Empty List !!!");
+        return ;
     }
+    sortCustomer();
+    view(cDAO.getAll(),customerMenu);
+}
 
-    public void traverserOrder() {
-        oDAO.traverser();
+public void traverserProduct(){
+    if(pDAO.getAll() == null){
+        System.out.println("Empty List !!!");
+        return ;
     }
+    sortProduct();
+    view(pDAO.getAll(),productMenu);
+}
 
-    public void traverserProduct() {
-        pDAO.traverser();
+public void traverserOrder(){
+    if(oDAO.getAll() == null){
+        System.out.println("Empty List !!!");
+        return ;
     }
+    view(oDAO.getAll(), orderMenu);
+}
+//    public void traverserCustomer() {
+//        cDAO.traverser();
+//    }
+//
+//    public void traverserOrder() {
+//        oDAO.traverser();
+//    }
+//
+//    public void traverserProduct() {
+//        pDAO.traverser();
+//    }
 
     public void traverserPendingOrder() {
         if (oDAO.getAll() == null) {
@@ -357,16 +424,33 @@ public class StoreManagement {
         }
         for (Order order : oDAO.getAll()) {
             if (order.isStatus() == false) {
-                System.out.print(order.getoID() + " | " + order.getcID() + " | " + order.getpID() + "|" + order.getOrderQuantity() + " | " + order.getOrderDate() + "|");
-                System.out.println(order.isStatus() ? "Delivered" : "Not Delivered");
+                System.out.println(orderMenu);
+                view(order);
             }
         }
     }
     
-    public void traverserAscOrder(){
-        List<Order> tempOrder = new ArrayList();
+    private<T extends IOutput > void view(T data){
+        System.out.println(data.output());
+    }
+    
+    private<T extends IOutput > void view(List<T> listData, String menuFormat){
+        System.out.println(menuFormat);
+        for(T data: listData){
+            view(data);
+        }
     }
 
+    public void traverserAscOrder() {
+        List<Order> tempOrder = new ArrayList();
+        tempOrder.addAll(sortAscOrder());
+        System.out.printf("|%-4s|%-20s|%-4s|%-5s|%-13s|%-14s|\n","OID","Name","PID","Quan","Date Order", "Status");
+        for (Order order : tempOrder) {
+            String status = order.isStatus() ? "Delivered" : "Not Delivered";
+            System.out.printf("|%-4s|%-20s|%-4s|%-5d|%-13s|%-14s|\n",order.getoID(),cDAO.read(order.getcID()).getcName().trim(),order.getpID(),order.getOrderQuantity(),order.getOrderDate(),status);
+        }
+    } 
+    // PRIVATE ZONE : HERE IS THE PLACE STORE LOCAL METHOD
     private boolean isCustomerExist(String ID) {
         Customer customer = cDAO.read(ID);
         return customer != null;
@@ -398,6 +482,7 @@ public class StoreManagement {
             }
         }
     }
+
     private void sortCustomer() {
         if (cDAO.getAll() == null) {
             return;
@@ -414,60 +499,68 @@ public class StoreManagement {
             }
         }
     }
-    private List<Order> sortAscOrder(){
+
+    private List<Order> sortAscOrder() {
         List<Order> temp = new ArrayList();
         temp.addAll(oDAO.getAll());
         int size = temp.size();
-        for(int i = 0; i < size; i++){
-            for(int j = i; j < size; j++){
+        for (int i = 0; i < size; i++) {
+            for (int j = i; j < size; j++) {
                 Order o1 = temp.get(i);
                 Order o2 = temp.get(j);
                 Customer co1 = cDAO.read(o1.getcID());
                 Customer co2 = cDAO.read(o2.getcID());
-                if(co1 != null || co2 != null)
-                if(co1.getcName().compareTo(co2.getcName()) == 1){
-                    temp.set(i, o2);
-                    temp.set(j, o1);
+                if (co1 != null || co2 != null) {
+                    if (co1.getcName().compareTo(co2.getcName()) == 1) {
+                        temp.set(i, o2);
+                        temp.set(j, o1);
+                    }
                 }
             }
         }
         return temp;
     }
 
-    private void orderMenu(){
+    private void orderMenu() {
         System.out.println("|Order ID \t| Customer name \t|Product ID \t|");
     }
-    
-    public void startAutoSaving(){
+
+    public void startAutoSaving() {
         Runnable cSave;
         Runnable oSave;
         Runnable pSave;
         cSave = () -> {
-            saveCustomerToFile();
-            System.out.println("Auto save complete !!!");
-            try {
-                Thread.currentThread().sleep(30000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            do {
+                saveCustomerToFile();
+                System.out.println("Auto save complete !!!");
+                try {
+                    Thread.currentThread().sleep(30000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } while (true);
         };
-        oSave = () ->{
-            saveOrderToFile();
-            System.out.println("Auto save complete !!!");
-            try{
-                Thread.currentThread().sleep(30000);
-            }catch(InterruptedException ex){
-                Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE,null,ex);
-            }
+        oSave = () -> {
+            do {
+                saveOrderToFile();
+                System.out.println("Auto save complete !!!");
+                try {
+                    Thread.currentThread().sleep(30000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } while (true);
         };
         pSave = () -> {
-            saveProductToFile();
-            System.out.println("Auto save complete !!!");
-            try{
-                Thread.currentThread().sleep(30000);
-            }catch(InterruptedException ex){
-                Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE,null,ex);
-            }
+            do {
+                saveProductToFile();
+                System.out.println("Auto save complete !!!");
+                try {
+                    Thread.currentThread().sleep(30000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } while (true);
         };
         updateCFile = new Thread(cSave);
         updateOFile = new Thread(oSave);
@@ -475,5 +568,10 @@ public class StoreManagement {
         updateCFile.start();
         updateOFile.start();
         updatePFile.start();
+    }
+    public void stopAutoUpdate(){
+        updateCFile.yield();
+        updateOFile.yield();
+        updatePFile.yield();
     }
 }

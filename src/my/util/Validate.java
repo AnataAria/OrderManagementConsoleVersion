@@ -33,7 +33,7 @@ public class Validate {
             System.out.println(message);
             sc = new Scanner(System.in);
             scan = sc.nextLine();
-        } while (scan != null || !scan.isEmpty() || !scan.matches(regex));
+        } while (!scan.isEmpty() && !scan.matches(regex));
         return scan;
     }
 

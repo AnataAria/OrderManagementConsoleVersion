@@ -3,15 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.model;
-
-import java.util.StringTokenizer;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Customer implements Comparable<Customer> {
+public class Customer implements Comparable<Customer>, IOutput {
     private String cID;
     private String cName;
     private String cAddress;
@@ -76,6 +74,11 @@ public class Customer implements Comparable<Customer> {
     
     @Override
     public String toString(){
-        return getcID() + " | " + getcName()+ " | " + getcAddress() + " | " + getcPhone();
+        return getcID() + "|" + getcName()+ "|" + getcAddress() + "|" + getcPhone();
+    }
+    
+    @Override
+    public String output(){
+        return String.format("|%-4s|%-20s|%-20s|%-13s|", getcID(),getcName(),getcAddress(),getcPhone());
     }
 }

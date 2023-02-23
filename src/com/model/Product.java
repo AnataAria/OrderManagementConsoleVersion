@@ -3,15 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.model;
-
-import java.util.StringTokenizer;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Product implements Comparable<Product> {
+public class Product implements Comparable<Product>,IOutput {
     private String pID;
     private String pName;
     private String unit;
@@ -75,7 +73,7 @@ public class Product implements Comparable<Product> {
 
     @Override
     public int compareTo(Product o) {
-        return this.pID.compareTo(o.getpID());
+        return this.pID.trim().compareTo(o.getpID().trim());
     }
     
     public void importProduct(){
@@ -87,10 +85,15 @@ public class Product implements Comparable<Product> {
     
     @Override
     public String toString(){
-        return getpID() + " | " + getpName() + " | " +getOrigin()+ " | " +getUnit()+ " | " +getPrice();
+        return getpID() + "|" + getpName() + "|" +getOrigin()+ "|" +getUnit()+ "|" +getPrice();
     }
     
     public String visit(){
-        return getpID() + " | " + getpName() + " | " +getOrigin()+ " | " +getUnit()+ " | " +getPrice();
+        return getpID() + "|" + getpName() + "|" +getOrigin()+ "|" +getUnit()+ "|" +getPrice();
+    }
+    
+    @Override
+    public String output(){
+        return String.format("|%-4s|%-20s|%-20s|%-13s|%-15d|", getpID(),getpName(),getOrigin(),getUnit(),getPrice());
     }
 }

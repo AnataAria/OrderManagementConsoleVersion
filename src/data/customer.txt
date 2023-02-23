@@ -1,4 +1,5 @@
-C000  |  Nguyen Quang Vinh  |  Linh Trung  |  0918125719
-C001  |  Hoang Cong Tham  |  Binh Long  |  0918555666
-C005  |  Le Van Viet  |  Thu Duc  |  0918666777
-C006 | Nguyen Van Hoai | Linh Dong | 0918555666
+C000                 |                 Nguyen Quang Vinh                 |                 Linh Trung                 |                 0918125719
+C001                 |                 Hoang Cong Tham                 |                 Binh Long                 |                 0918555666
+C005                 |                 Le Van Viet                 |                 Thu Duc                 |                 0918666777
+C006                |                Nguyen Van Hoai                |                Linh Dong                |                0918555666
+C013|Nguyen Quang Vinh|Linh Trung|0918125719

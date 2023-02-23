@@ -1,1 +1,1 @@
-P000|Laptop|China|1 laptop|2000
+P000  |  Laptop  |  China  |  1 laptop  |2000

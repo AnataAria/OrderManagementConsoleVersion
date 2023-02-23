@@ -11,7 +11,7 @@ import my.util.Validate;
  *
  * @author AnataArisa
  */
-public class Order implements Comparable<Order> {
+public class Order implements Comparable<Order>,IOutput {
     private String oID;
     private String cID;
     private String pID;
@@ -81,7 +81,7 @@ public class Order implements Comparable<Order> {
 
     @Override
     public int compareTo(Order o) {
-        return getoID().compareTo(o.getoID());
+        return getoID().trim().compareTo(o.getoID().trim());
     }
     
     public void importOrder(){
@@ -92,7 +92,13 @@ public class Order implements Comparable<Order> {
     
     @Override
     public String toString(){
-        return getoID()+ " | " +getcID()+ " | " +getpID()+ "|" +getOrderQuantity()+ " | " +getOrderDate()+"|"+isStatus();
+        return getoID()+ "|" +getcID()+ "|" +getpID()+ "|" +getOrderQuantity()+ "|" +getOrderDate()+"|"+isStatus();
+    }
+    
+    @Override
+    public String output(){
+        String status = (isStatus())? "Delivered":"Not Delivered";
+        return String.format("|%-4s|%-4s|%-4s|%-5d|%-13s|%-14s|",getoID(),getcID(),getpID(),getOrderQuantity(),getOrderDate(),status);
     }
 
 }

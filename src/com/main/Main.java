@@ -54,11 +54,11 @@ public class Main {
                     break;
                     
                 case 7:
-                    
+                    sm.traverserAscOrder();
                     break;
                     
                 case 8: 
-                    
+                    sm.traverserPendingOrder();
                     break;
                     
                 case 9:
@@ -92,6 +92,7 @@ public class Main {
                     
                 case 12:
                     mainCheck = false;
+                    sm.stopAutoUpdate();
                     break;
             }
         } while (mainCheck);
