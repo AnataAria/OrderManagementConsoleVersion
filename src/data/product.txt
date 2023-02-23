@@ -1,1 +1,3 @@
-P000  |  Laptop  |  China  |  1 laptop  |2000
+P000|Laptop|China|1 laptop|2000
+P001|Loli|Japan|1 Loli|20000
+P002|BB|Japan|1 BB|19005

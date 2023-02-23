@@ -44,7 +44,7 @@ public class Product implements Comparable<Product>,IOutput {
     }
 
     public void setpName(String pName) {
-        this.pName = pName;
+        this.pName = pName.trim();
     }
 
     public String getUnit() {
@@ -52,7 +52,7 @@ public class Product implements Comparable<Product>,IOutput {
     }
 
     public void setUnit(String unit) {
-        this.unit = unit;
+        this.unit = unit.trim();
     }
 
     public String getOrigin() {
@@ -60,7 +60,7 @@ public class Product implements Comparable<Product>,IOutput {
     }
 
     public void setOrigin(String origin) {
-        this.origin = origin;
+        this.origin = origin.trim();
     }
 
     public int getPrice() {

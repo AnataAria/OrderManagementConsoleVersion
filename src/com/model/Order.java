@@ -3,8 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.model;
-
-import java.util.StringTokenizer;
 import my.util.Validate;
 
 /**
@@ -28,7 +26,7 @@ public class Order implements Comparable<Order>,IOutput {
         this.status = status;
     }
     public Order(String ID){
-        this.oID = ID;
+        this.oID = ID.trim();
     }
 
     public String getoID() {
@@ -36,7 +34,7 @@ public class Order implements Comparable<Order>,IOutput {
     }
 
     public void setoID(String oID) {
-        this.oID = oID;
+        this.oID = oID.trim();
     }
 
     public String getcID() {
@@ -44,7 +42,7 @@ public class Order implements Comparable<Order>,IOutput {
     }
 
     public void setcID(String cID) {
-        this.cID = cID;
+        this.cID = cID.trim();
     }
 
     public String getpID() {
@@ -52,7 +50,7 @@ public class Order implements Comparable<Order>,IOutput {
     }
 
     public void setpID(String pID) {
-        this.pID = pID;
+        this.pID = pID.trim();
     }
 
     public int getOrderQuantity() {
@@ -68,7 +66,7 @@ public class Order implements Comparable<Order>,IOutput {
     }
 
     public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+        this.orderDate = orderDate.trim();
     }
 
     public boolean isStatus() {

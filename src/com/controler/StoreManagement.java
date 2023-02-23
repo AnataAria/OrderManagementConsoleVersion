@@ -28,9 +28,10 @@ public class StoreManagement {
     private Thread updateCFile;
     private Thread updateOFile;
     private Thread updatePFile;
-    private final String customerMenu = String.format("|%-6s|%-20s|%-20s|%-13s|", "ID","Name","Address", "Phone number");
-    private final String productMenu = String.format("|%-6s|%-20s|%-20s|%-13s|%-15s|","ID","Product name","Origin", "Unit", "Price");
-    private final String orderMenu = String.format("|%-6s|%-6s|%-6s|%-5s|%-13s|%-14s|", "OID","CID","PID","Quan","Date Order", "Status");
+    private final String customerMenu = String.format("|%-4s|%-20s|%-20s|%-13s|", "ID", "Name", "Address", "Phone number");
+    private final String productMenu = String.format("|%-4s|%-20s|%-20s|%-13s|%-15s|", "ID", "Product name", "Origin", "Unit", "Price");
+    private final String orderMenu = String.format("|%-4s|%-4s|%-4s|%-5s|%-13s|%-14s|", "OID", "CID", "PID", "Quan", "Date Order", "Status");
+
     public StoreManagement() {
         cDAO = new CustomerDAO();
         oDAO = new OrderDAO();
@@ -69,7 +70,8 @@ public class StoreManagement {
                 if (Validate.booleanValidation("Are you sure want to import this ?")) {
                     pDAO.create(product);
                     System.out.println("Add product with ID " + ID + " :  Success!!! ");
-                    System.out.println(product.toString());
+                    System.out.println(productMenu);
+                    view(product);
                     check = false;
                 } else {
                     System.out.println("Skiped !!!");
@@ -79,31 +81,40 @@ public class StoreManagement {
     }
 
     public void createOrder() {
-        String ID = Validate.regexValidate("O[\\d]{3}", "Enter Order ID: ");
-        Order order = oDAO.read(ID);
-        if (order == null) {
-            order = new Order(ID);
-            ID = returnCustomerID();
-            Customer temp = cDAO.read(ID);
-            if (temp != null) {
-                System.out.println(temp);
-                order.setcID(ID);
-                ID = returnProductID();
-                Product product = pDAO.read(ID);
-                if (product != null) {
-                    System.out.println(product);
-                    order.setpID(ID);
-                    order.importOrder();
-                    if (Validate.booleanValidation("Are you sure want to import this ?")) {
-                        oDAO.create(order);
-                        System.out.println("Add order Success!!! ");
-                        System.out.println(product.toString());
-                    } else {
-                        System.out.println("Skiped !!!");
+        boolean check = true;
+        do {
+            String ID = Validate.regexValidate("O[\\d]{3}", "Enter Order ID: ");
+            Order order = oDAO.read(ID);
+            if (order == null) {
+                order = new Order(ID);
+                traverserCustomer();
+                ID = returnCustomerID();
+                Customer temp = cDAO.read(ID);
+                if (temp != null) {
+                    System.out.println(temp);
+                    order.setcID(ID);
+                    traverserProduct();
+                    ID = returnProductID();
+                    Product product = pDAO.read(ID);
+                    if (product != null) {
+                        System.out.println(product);
+                        order.setpID(ID);
+                        order.importOrder();
+                        if (Validate.booleanValidation("Are you sure want to import this ?")) {
+                            oDAO.create(order);
+                            System.out.println("Add order Success!!! ");
+                            System.out.println(product.toString());
+                        } else {
+                            System.out.println("Skiped !!!");
+                        }
                     }
                 }
             }
-        }
+            if (!Validate.booleanValidation("Do you want to add more: ")) {
+                check = false;
+            }
+        } while (check == true);
+
     }
 
     private String returnCustomerID() {
@@ -113,28 +124,6 @@ public class StoreManagement {
                 return ID;
             } else {
                 System.out.println("Your customer ID is not in the database, please try again !!!");
-            }
-        } while (true);
-    }
-
-    private String returnOrderID() {
-        do {
-            String ID = Validate.regexValidate("O[\\d]{3}", "Enter Order ID: ");
-            if (isOrderExist(ID)) {
-                return ID;
-            } else {
-                System.out.println("Your order ID is not in the database, please try again !!!");
-            }
-        } while (true);
-    }
-
-    private String returnProductID() {
-        do {
-            String ID = Validate.regexValidate("P[\\d]{3}", "Enter product ID: ");
-            if (isProductExist(ID)) {
-                return ID;
-            } else {
-                System.out.println("Your product ID is not in the database, please try again !!!");
             }
         } while (true);
     }
@@ -226,6 +215,7 @@ public class StoreManagement {
                 }
             } while (true);
             do {
+                traverserProduct();
                 ID = Validate.regexValidateCanSkip("P[\\d]{3}", "Enter new product ID: ");
                 if (ID.isEmpty()) {
                     break;
@@ -245,33 +235,6 @@ public class StoreManagement {
             }
             temp.setStatus(Validate.booleanValidation("Enter new status: "));
             oDAO.update(temp);
-//            ID = Validate.regexValidateCanSkip("C[\\d]{3}", "Enter customer ID: ");
-//            if (ID != null) {
-//                temp.setcID(ID);
-//                ID = Validate.regexValidateCanSkip("P[\\d]{3}", "Enter product ID");
-//                if (ID != null) {
-//                    temp.setpID(ID);
-//                    int quantity = Validate.intValidationCanSkip("Enter order quantity: ", 1, Integer.MAX_VALUE);
-//                    if (quantity != -1) {
-//                        temp.setOrderQuantity(quantity);
-//                        String date;
-//                        if ((date = Validate.dateTimeValidateCanSkip("Enter order date: ", "dd-MM-YYYY")) != null) {
-//                            temp.setOrderDate(date);
-//                            temp.setStatus(Validate.booleanValidation("Enter status: "));
-//                            oDAO.update(temp);
-//                        } else {
-//                            System.out.println("Skiped !!!");
-//                        }
-//                        temp.setStatus(true);
-//                    } else {
-//                        System.out.println("Skiped !!!");
-//                    }
-//                } else {
-//                    System.out.println("Skiped !!!");
-//                }
-//            } else {
-//                System.out.println("Skiped !!!");
-//            }
         }
     }
 
@@ -380,31 +343,32 @@ public class StoreManagement {
         product.setList(pDAO.getAll());
         product.uploadToFile();
     }
-public void traverserCustomer(){
-    if(cDAO.getAll() == null){
-        System.out.println("Empty List !!!");
-        return ;
-    }
-    sortCustomer();
-    view(cDAO.getAll(),customerMenu);
-}
 
-public void traverserProduct(){
-    if(pDAO.getAll() == null){
-        System.out.println("Empty List !!!");
-        return ;
+    public void traverserCustomer() {
+        if (cDAO.getAll() == null) {
+            System.out.println("Empty List !!!");
+            return;
+        }
+        sortCustomer();
+        view(cDAO.getAll(), customerMenu);
     }
-    sortProduct();
-    view(pDAO.getAll(),productMenu);
-}
 
-public void traverserOrder(){
-    if(oDAO.getAll() == null){
-        System.out.println("Empty List !!!");
-        return ;
+    public void traverserProduct() {
+        if (pDAO.getAll() == null) {
+            System.out.println("Empty List !!!");
+            return;
+        }
+        sortProduct();
+        view(pDAO.getAll(), productMenu);
     }
-    view(oDAO.getAll(), orderMenu);
-}
+
+    public void traverserOrder() {
+        if (oDAO.getAll() == null) {
+            System.out.println("Empty List !!!");
+            return;
+        }
+        view(oDAO.getAll(), orderMenu);
+    }
 //    public void traverserCustomer() {
 //        cDAO.traverser();
 //    }
@@ -429,14 +393,14 @@ public void traverserOrder(){
             }
         }
     }
-    
-    private<T extends IOutput > void view(T data){
+
+    private <T extends IOutput> void view(T data) {
         System.out.println(data.output());
     }
-    
-    private<T extends IOutput > void view(List<T> listData, String menuFormat){
+
+    private <T extends IOutput> void view(List<T> listData, String menuFormat) {
         System.out.println(menuFormat);
-        for(T data: listData){
+        for (T data : listData) {
             view(data);
         }
     }
@@ -444,12 +408,13 @@ public void traverserOrder(){
     public void traverserAscOrder() {
         List<Order> tempOrder = new ArrayList();
         tempOrder.addAll(sortAscOrder());
-        System.out.printf("|%-4s|%-20s|%-4s|%-5s|%-13s|%-14s|\n","OID","Name","PID","Quan","Date Order", "Status");
+        System.out.printf("|%-4s|%-20s|%-4s|%-5s|%-13s|%-14s|\n", "OID", "Name", "PID", "Quan", "Date Order", "Status");
         for (Order order : tempOrder) {
             String status = order.isStatus() ? "Delivered" : "Not Delivered";
-            System.out.printf("|%-4s|%-20s|%-4s|%-5d|%-13s|%-14s|\n",order.getoID(),cDAO.read(order.getcID()).getcName().trim(),order.getpID(),order.getOrderQuantity(),order.getOrderDate(),status);
+            System.out.printf("|%-4s|%-20s|%-4s|%-5d|%-13s|%-14s|\n", order.getoID(), cDAO.read(order.getcID()).getcName().trim(), order.getpID(), order.getOrderQuantity(), order.getOrderDate(), status);
         }
-    } 
+    }
+
     // PRIVATE ZONE : HERE IS THE PLACE STORE LOCAL METHOD
     private boolean isCustomerExist(String ID) {
         Customer customer = cDAO.read(ID);
@@ -521,8 +486,26 @@ public void traverserOrder(){
         return temp;
     }
 
-    private void orderMenu() {
-        System.out.println("|Order ID \t| Customer name \t|Product ID \t|");
+    private String returnOrderID() {
+        do {
+            String ID = Validate.regexValidate("O[\\d]{3}", "Enter Order ID: ");
+            if (isOrderExist(ID)) {
+                return ID;
+            } else {
+                System.out.println("Your order ID is not in the database, please try again !!!");
+            }
+        } while (true);
+    }
+
+    private String returnProductID() {
+        do {
+            String ID = Validate.regexValidate("P[\\d]{3}", "Enter product ID: ");
+            if (isProductExist(ID)) {
+                return ID;
+            } else {
+                System.out.println("Your product ID is not in the database, please try again !!!");
+            }
+        } while (true);
     }
 
     public void startAutoSaving() {
@@ -530,31 +513,40 @@ public void traverserOrder(){
         Runnable oSave;
         Runnable pSave;
         cSave = () -> {
+            int size = (cDAO.getAll() == null) ? 0 : cDAO.getAll().size();
             do {
-                saveCustomerToFile();
-                System.out.println("Auto save complete !!!");
+                if (size < cDAO.getAll().size() || size > cDAO.getAll().size()) {
+                    saveCustomerToFile();
+                    try {
+                        Thread.currentThread().sleep(30000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 try {
-                    Thread.currentThread().sleep(30000);
+                    Thread.currentThread().sleep(3000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } while (true);
         };
         oSave = () -> {
+            int size = (oDAO.getAll() == null) ? 0 : oDAO.getAll().size();
             do {
-                saveOrderToFile();
-                System.out.println("Auto save complete !!!");
-                try {
-                    Thread.currentThread().sleep(30000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+                if (size != oDAO.getAll().size()) {
+                    saveOrderToFile();
+                    try {
+                        Thread.currentThread().sleep(30000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
+
             } while (true);
         };
         pSave = () -> {
             do {
                 saveProductToFile();
-                System.out.println("Auto save complete !!!");
                 try {
                     Thread.currentThread().sleep(30000);
                 } catch (InterruptedException ex) {
@@ -569,7 +561,8 @@ public void traverserOrder(){
         updateOFile.start();
         updatePFile.start();
     }
-    public void stopAutoUpdate(){
+
+    public void stopAutoUpdate() {
         updateCFile.yield();
         updateOFile.yield();
         updatePFile.yield();

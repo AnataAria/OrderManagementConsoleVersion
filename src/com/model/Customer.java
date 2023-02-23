@@ -42,7 +42,7 @@ public class Customer implements Comparable<Customer>, IOutput {
     }
 
     public void setcName(String cName) {
-        this.cName = cName;
+        this.cName = cName.trim();
     }
 
     public String getcAddress() {
@@ -50,7 +50,7 @@ public class Customer implements Comparable<Customer>, IOutput {
     }
 
     public void setcAddress(String cAddress) {
-        this.cAddress = cAddress;
+        this.cAddress = cAddress.trim();
     }
 
     public String getcPhone() {
@@ -58,7 +58,7 @@ public class Customer implements Comparable<Customer>, IOutput {
     }
 
     public void setcPhone(String cPhone) {
-        this.cPhone = cPhone;
+        this.cPhone = cPhone.trim();
     }
 
     @Override
