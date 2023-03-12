@@ -3,13 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.model;
+import java.util.Comparator;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Product implements Comparable<Product>,IOutput {
+public class Product implements Comparable<Product>,IOutput,Comparator<Product> {
     private String pID;
     private String pName;
     private String unit;
@@ -24,10 +25,10 @@ public class Product implements Comparable<Product>,IOutput {
     }
 
     public Product(String pID, String pName, String origin, String unit, int price) {
-        this.pID = pID;
-        this.pName = pName;
-        this.unit = unit;
-        this.origin = origin;
+        this.pID = pID.trim();
+        this.pName = pName.trim();
+        this.unit = unit.trim();
+        this.origin = origin.trim();
         this.price = price;
     }
 
@@ -95,5 +96,10 @@ public class Product implements Comparable<Product>,IOutput {
     @Override
     public String output(){
         return String.format("|%-4s|%-20s|%-20s|%-13s|%-15d|", getpID(),getpName(),getOrigin(),getUnit(),getPrice());
+    }
+
+    @Override
+    public int compare(Product o1, Product o2) {
+        return o1.getpID().compareTo(o2.getpID());
     }
 }

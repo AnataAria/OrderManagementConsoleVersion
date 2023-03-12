@@ -22,10 +22,11 @@ public class Main {
         String[] option = {"List all Products", "List all Customers", "Search a Customer based on his/her ID", "Add a Customer", "Update a Customer", "Save Customers to the file, named customers.txt", "List all Orders in ascending order of Customer name", "List all pending Orders", "Add an Order", "Update an Order", "Save Orders to file, named orders.txt", "Quit"};
         menu.add(option);
         orderMenu.add(subOption);
-        sm.readCustomerFile();
-        sm.readOrderFile();
-        sm.readProductFile();
-        sm.startAutoSaving();
+//        sm.readCustomerFile();
+//        sm.readOrderFile();
+//        sm.readProductFile();
+//        sm.startAutoUpdate();
+            sm.loadAll();
         boolean mainCheck = true;
         do {
             int choice = menu.printMenu();
@@ -92,7 +93,7 @@ public class Main {
                     
                 case 12:
                     mainCheck = false;
-                    sm.stopAutoUpdate();
+                    sm.shutdownAutoUpdate();
                     break;
             }
         } while (mainCheck);

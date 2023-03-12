@@ -20,6 +20,12 @@ public class ProductDAO implements IDAO<Product> {
         productList = new ArrayList();
     }
 
+    public ProductDAO(List<Product> productList) {
+        this.productList = productList;
+    }
+    
+    
+
     @Override
     public List<Product> getAll() {
         if (productList.isEmpty()) {

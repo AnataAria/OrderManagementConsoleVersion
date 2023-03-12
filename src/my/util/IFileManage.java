@@ -16,4 +16,5 @@ public interface IFileManage<T> {
     public void setList(List<T> list);
     public boolean loadFromFile();
     public boolean uploadToFile();
+    public void clear();
 }

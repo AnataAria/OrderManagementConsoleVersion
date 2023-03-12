@@ -3,23 +3,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.model;
+import java.util.Comparator;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Customer implements Comparable<Customer>, IOutput {
+public class Customer implements Comparable<Customer>, IOutput, Comparator<Customer> {
     private String cID;
     private String cName;
     private String cAddress;
     private String cPhone;
 
     public Customer(String cID, String cName, String cAddress, String cPhone) {
-        this.cID = cID;
-        this.cName = cName;
-        this.cAddress = cAddress;
-        this.cPhone = cPhone;
+        this.cID = cID.trim();
+        this.cName = cName.trim();
+        this.cAddress = cAddress.trim();
+        this.cPhone = cPhone.trim();
     }
     public Customer(){
         
@@ -80,5 +81,10 @@ public class Customer implements Comparable<Customer>, IOutput {
     @Override
     public String output(){
         return String.format("|%-4s|%-20s|%-20s|%-13s|", getcID(),getcName(),getcAddress(),getcPhone());
+    }
+
+    @Override
+    public int compare(Customer o1, Customer o2) {
+        return o1.getcID().compareTo(o2.getcID());
     }
 }

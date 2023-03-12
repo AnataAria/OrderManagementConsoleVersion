@@ -19,6 +19,10 @@ public class CustomerDAO implements IDAO<Customer> {
     public CustomerDAO() {
         cList = new ArrayList();
     }
+    
+    public CustomerDAO(List<Customer> cList){
+        this.cList = cList;
+    }
 
     @Override
     public List<Customer> getAll() {

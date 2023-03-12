@@ -19,6 +19,12 @@ public class OrderDAO implements IDAO<Order> {
     public OrderDAO() {
         this.oList = new ArrayList();
     }
+
+    public OrderDAO(List<Order> oList) {
+        this.oList = oList;
+    }
+    
+    
     
     @Override
     public List<Order> getAll() {

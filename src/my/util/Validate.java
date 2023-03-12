@@ -76,7 +76,8 @@ public class Validate {
             System.out.println(message);
             sc = new Scanner(System.in);
             scan = sc.nextLine();
-        } while (scan == null || !scan.isEmpty());
+            if(!scan.isEmpty()) break;
+        } while (!scan.isEmpty());
         return scan;
     }
 
@@ -161,5 +162,22 @@ public class Validate {
             }
         } while (check);
         return date;
+    }
+    public static boolean booleanValidationCanSkip(String message) {
+        String scan;
+        do {
+            System.out.println(message + "(T | F | True | False)");
+            sc = new Scanner(System.in);
+            scan = sc.nextLine();
+            if(scan.isEmpty()) return false;
+            if (scan.toUpperCase().charAt(0) == 'T' || scan.toUpperCase().equals("TRUE")) {
+                return true;
+            }
+            if (scan.toUpperCase().charAt(0) == 'F' || scan.toUpperCase().equals("FALSE")) {
+                return false;
+            }
+            if(scan.isEmpty())return false;
+            System.out.println("Your input isn't valid, please try again!!!");
+        } while (true);
     }
 }

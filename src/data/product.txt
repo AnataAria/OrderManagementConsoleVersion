@@ -1,3 +1,5 @@
-P000|Laptop|China|1 laptop|2000
-P001|Loli|Japan|1 Loli|20000
-P002|BB|Japan|1 BB|19005
+P000|Loli no BB|1 Loli|Japan|20000
+P001|Loli BB|1 Loli|Japan|10000
+P002|BB|1 BB|Japan|2000
+P003|Basement|1 Basement|Japan|1000
+P004|Basement for loli|1 Basement|Japan|1000

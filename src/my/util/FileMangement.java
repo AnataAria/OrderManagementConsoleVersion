@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package my.util;
+
 import com.model.Customer;
 import com.model.Order;
 import com.model.Product;
@@ -29,6 +30,13 @@ public class FileMangement<T> implements IFileManage<T> {
     private String filePath;
     private List<T> dataList = new ArrayList();
 
+    public FileMangement(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public FileMangement() {
+    }
+    
     @Override
     public void setPath(String path) {
         this.filePath = path;
@@ -37,6 +45,11 @@ public class FileMangement<T> implements IFileManage<T> {
     @Override
     public List<T> getList() {
         return this.dataList;
+    }
+    
+    @Override
+    public void clear(){
+        dataList.clear();
     }
 
     @Override
@@ -52,7 +65,9 @@ public class FileMangement<T> implements IFileManage<T> {
             while ((data = br.readLine()) != null) {
                 StringTokenizer st = new StringTokenizer(data, "|");
                 T temp = handle.fileToObject(st);
-                if(temp != null) dataList.add(temp);
+                if (temp != null) {
+                    dataList.add(temp);
+                }
             }
             return true;
         } catch (FileNotFoundException e) {
@@ -85,6 +100,7 @@ public class FileMangement<T> implements IFileManage<T> {
             for (T data : dataList) {
                 bw.write(data + "\n");
             }
+            System.out.println("Save success !!!");
             return true;
         } catch (FileNotFoundException e) {
 
@@ -102,6 +118,7 @@ public class FileMangement<T> implements IFileManage<T> {
                 Logger.getLogger(FileMangement.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.out.println("Save failed !!!");
         return false;
     }
 
@@ -109,19 +126,20 @@ public class FileMangement<T> implements IFileManage<T> {
     public void setList(List<T> list) {
         this.dataList = list;
     }
-    
-    private class Handle{
-        public T fileToObject(StringTokenizer a){
-            if(a.countTokens() == 4){
-                Customer temp = new Customer(a.nextToken(),a.nextToken(),a.nextToken(),a.nextToken());
-                return (T)temp;
+
+    private class Handle {
+
+        public T fileToObject(StringTokenizer a) {
+            if (a.countTokens() == 4) {
+                Customer temp = new Customer(a.nextToken(), a.nextToken(), a.nextToken(), a.nextToken());
+                return (T) temp;
             }
-            if(a.countTokens() == 5){
-                Product temp = new Product(a.nextToken(),a.nextToken(),a.nextToken(),a.nextToken(),Integer.parseInt(a.nextToken()));
-                return (T)temp;
+            if (a.countTokens() == 5) {
+                Product temp = new Product(a.nextToken(), a.nextToken(), a.nextToken(), a.nextToken(), Integer.parseInt(a.nextToken()));
+                return (T) temp;
             }
-            if(a.countTokens() == 6){
-                Order temp = new Order(a.nextToken(),a.nextToken(),a.nextToken(),Integer.parseInt(a.nextToken()),a.nextToken(),Boolean.parseBoolean(a.nextToken()));
+            if (a.countTokens() == 6) {
+                Order temp = new Order(a.nextToken(), a.nextToken(), a.nextToken(), Integer.parseInt(a.nextToken()), a.nextToken(), Boolean.parseBoolean(a.nextToken()));
                 return (T) temp;
             }
             return null;

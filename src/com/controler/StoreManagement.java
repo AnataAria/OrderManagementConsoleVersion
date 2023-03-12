@@ -6,11 +6,12 @@ package com.controler;
 
 import com.dao.*;
 import com.model.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import my.util.FileMangement;
 import my.util.IFileManage;
 import my.util.Validate;
@@ -21,21 +22,21 @@ import my.util.Validate;
  */
 public class StoreManagement {
 
-    private IDAO<Customer> cDAO;
-    private IDAO<Order> oDAO;
-    private IDAO<Product> pDAO;
-    private Scanner sc;
+    private final IDAO<Customer> cDAO;
+    private final IDAO<Order> oDAO;
+    private final IDAO<Product> pDAO;
     private Thread updateCFile;
     private Thread updateOFile;
     private Thread updatePFile;
+    private DatabaseManager dm = new DatabaseManager();
     private final String customerMenu = String.format("|%-4s|%-20s|%-20s|%-13s|", "ID", "Name", "Address", "Phone number");
     private final String productMenu = String.format("|%-4s|%-20s|%-20s|%-13s|%-15s|", "ID", "Product name", "Origin", "Unit", "Price");
     private final String orderMenu = String.format("|%-4s|%-4s|%-4s|%-5s|%-13s|%-14s|", "OID", "CID", "PID", "Quan", "Date Order", "Status");
 
     public StoreManagement() {
-        cDAO = new CustomerDAO();
-        oDAO = new OrderDAO();
-        pDAO = new ProductDAO();
+        cDAO = new CustomerDAO(dm.getCustomerList());
+        oDAO = new OrderDAO(dm.getOrderList());
+        pDAO = new ProductDAO(dm.getProductList());
     }
 
     public void createCustomer() {
@@ -100,17 +101,18 @@ public class StoreManagement {
                         System.out.println(product);
                         order.setpID(ID);
                         order.importOrder();
-                        if (Validate.booleanValidation("Are you sure want to import this ?")) {
+                        if (Validate.booleanValidationCanSkip("Are you sure want to import this ?")) {
                             oDAO.create(order);
                             System.out.println("Add order Success!!! ");
-                            System.out.println(product.toString());
+                            System.out.println(orderMenu);
+                            view(order);
                         } else {
                             System.out.println("Skiped !!!");
                         }
                     }
                 }
             }
-            if (!Validate.booleanValidation("Do you want to add more: ")) {
+            if (!Validate.booleanValidation("Do you want to add more?: ")) {
                 check = false;
             }
         } while (check == true);
@@ -133,19 +135,25 @@ public class StoreManagement {
         if (temp != null) {
             System.out.println(temp);
         }
+        System.out.println("Can't found the product you needed!");
     }
 
     public void searchOrder() {
         Order temp = (Order) search("Enter order ID: ", "O[\\d]{3}");
         if (temp != null) {
             System.out.println(temp);
+        } else {
+            System.out.println("Can't found order you need");
         }
     }
 
     public void searchCustomer() {
         Customer temp = (Customer) search("Enter customer ID: ", "C[\\d]{3}");
         if (temp != null) {
-            System.out.println(temp);
+            System.out.println(customerMenu);
+            view(temp);
+        } else {
+            System.out.println("Can't found customer !!!");
         }
     }
 
@@ -191,7 +199,37 @@ public class StoreManagement {
         Customer temp = cDAO.read(ID);
         if (temp != null) {
             System.out.println(temp);
-            temp.importCustomer();
+            do {
+                String name = Validate.stringValidationCanSkip("Enter new customer name: ");
+                if (name.isEmpty()) {
+                    System.out.println("Skiped !!!");
+                    break;
+                } else {
+                    temp.setcName(name);
+                    break;
+                }
+            } while (true);
+            do {
+                String address = Validate.stringValidationCanSkip("Enter new customer address: ");
+                if (address.isEmpty()) {
+                    System.out.println("Skiped !!!");
+                    break;
+                } else {
+                    temp.setcAddress(address);
+                    break;
+                }
+            } while (true);
+            do {
+                String phoneNum = Validate.phoneValidationCanSkip("Enter new customer phone number: ");
+                if (phoneNum.isEmpty()) {
+                    System.out.println("Skiped !!!");
+                    break;
+                } else {
+                    temp.setcPhone(phoneNum);
+                    break;
+                }
+            } while (true);
+//            temp.importCustomer();
             cDAO.update(temp);
             System.out.println("Update product with CID: " + temp.getcID() + " Success !!!");
             System.out.println(temp);
@@ -244,6 +282,8 @@ public class StoreManagement {
             cDAO.delete(temp);
             System.out.println("Delete successful !!!");
             System.out.println(temp);
+        } else {
+            System.out.println("Not found customer ID !!!");
         }
     }
 
@@ -256,94 +296,96 @@ public class StoreManagement {
         if (order != null) {
             if (oDAO.delete(order) != null) {
                 System.out.println("Delete successfull");
+                System.out.println(order);
             }
+        } else {
+            System.out.println("Not found order ID !!!");
         }
     }
 
-    public void readOrderFile() {
-        IFileManage<Order> orderManage = new FileMangement();
-        orderManage.setPath("src\\data\\order.txt");
-        orderManage.loadFromFile();
-        if (oDAO.getAll() == null) {
-            for (Order order : orderManage.getList()) {
-                oDAO.create(order);
-            }
-            return;
-        }
-        for (Order order : orderManage.getList()) {
-            if (!isOrderExist(order.getoID())) {
-                oDAO.create(order);
-            }
-        }
-    }
-
-    public void readProductFile() {
-        IFileManage<Product> productManage = new FileMangement();
-        productManage.setPath("src\\data\\product.txt");
-        productManage.loadFromFile();
-        if (pDAO.getAll() == null) {
-            for (Product product : productManage.getList()) {
-                pDAO.create(product);
-            }
-            return;
-        }
-        for (Product product : productManage.getList()) {
-            if (!isProductExist(product.getpID())) {
-                pDAO.create(product);
-            }
-        }
-    }
-
-    public void readCustomerFile() {
-        IFileManage<Customer> customerManage = new FileMangement();
-        customerManage.setPath("src\\data\\customer.txt");
-        customerManage.loadFromFile();
-        if (cDAO.getAll() == null) {
-            for (Customer customer : customerManage.getList()) {
-                cDAO.create(customer);
-            }
-            return;
-        }
-        for (Customer customer : customerManage.getList()) {
-            if (!isCustomerExist(customer.getcID())) {
-                cDAO.create(customer);
-            }
-        }
-    }
-
-    public void saveOrderToFile() {
-        readOrderFile();
-        if (oDAO.getAll() == null) {
-            return;
-        }
-        IFileManage<Order> order = new FileMangement();
-        order.setPath("src\\data\\order.txt");
-        order.setList(oDAO.getAll());
-        order.uploadToFile();
-    }
-
-    public void saveCustomerToFile() {
-        readCustomerFile();
-        if (cDAO.getAll() == null) {
-            return;
-        }
-        IFileManage<Customer> customer = new FileMangement();
-        customer.setPath("src\\data\\customer.txt");
-        customer.setList(cDAO.getAll());
-        customer.uploadToFile();
-    }
-
-    public void saveProductToFile() {
-        readProductFile();
-        if (pDAO.getAll() == null) {
-            return;
-        }
-        IFileManage<Product> product = new FileMangement();
-        product.setPath("src\\data\\product.txt");
-        product.setList(pDAO.getAll());
-        product.uploadToFile();
-    }
-
+//    public void readOrderFile() {
+//        IFileManage<Order> orderManage = new FileMangement();
+//        orderManage.setPath("src\\data\\order.txt");
+//        orderManage.loadFromFile();
+//        if (oDAO.getAll() == null) {
+//            for (Order order : orderManage.getList()) {
+//                oDAO.create(order);
+//            }
+//            return;
+//        }
+//        for (Order order : orderManage.getList()) {
+//            if (!isOrderExist(order.getoID())) {
+//                oDAO.create(order);
+//            }
+//        }
+//    }
+//
+//    public void readProductFile() {
+//        IFileManage<Product> productManage = new FileMangement();
+//        productManage.setPath("src\\data\\product.txt");
+//        productManage.loadFromFile();
+//        if (pDAO.getAll() == null) {
+//            for (Product product : productManage.getList()) {
+//                pDAO.create(product);
+//            }
+//            return;
+//        }
+//        for (Product product : productManage.getList()) {
+//            if (!isProductExist(product.getpID())) {
+//                pDAO.create(product);
+//            }
+//        }
+//    }
+//
+//    public void readCustomerFile() {
+//        IFileManage<Customer> customerManage = new FileMangement();
+//        customerManage.setPath("src\\data\\customer.txt");
+//        customerManage.loadFromFile();
+//        if (cDAO.getAll() == null) {
+//            for (Customer customer : customerManage.getList()) {
+//                cDAO.create(customer);
+//            }
+//            return;
+//        }
+//        for (Customer customer : customerManage.getList()) {
+//            if (!isCustomerExist(customer.getcID())) {
+//                cDAO.create(customer);
+//            }
+//        }
+//    }
+//
+//    public void saveOrderToFile() {
+//        readOrderFile();
+//        if (oDAO.getAll() == null) {
+//            return;
+//        }
+//        IFileManage<Order> order = new FileMangement();
+//        order.setPath("src\\data\\order.txt");
+//        order.setList(oDAO.getAll());
+//        order.uploadToFile();
+//    }
+//
+//    public void saveCustomerToFile() {
+//        readCustomerFile();
+//        if (cDAO.getAll() == null) {
+//            return;
+//        }
+//        IFileManage<Customer> customer = new FileMangement();
+//        customer.setPath("src\\data\\customer.txt");
+//        customer.setList(cDAO.getAll());
+//        customer.uploadToFile();
+//    }
+//
+//    public void saveProductToFile() {
+//        readProductFile();
+//        if (pDAO.getAll() == null) {
+//            return;
+//        }
+//        IFileManage<Product> product = new FileMangement();
+//        product.setPath("src\\data\\product.txt");
+//        product.setList(pDAO.getAll());
+//        product.uploadToFile();
+//    }
     public void traverserCustomer() {
         if (cDAO.getAll() == null) {
             System.out.println("Empty List !!!");
@@ -354,20 +396,57 @@ public class StoreManagement {
     }
 
     public void traverserProduct() {
-        if (pDAO.getAll() == null) {
-            System.out.println("Empty List !!!");
+        List<Product> temp = dm.getProductFile();
+        if (temp.isEmpty()) {
+            System.out.println("Empty list !!!");
             return;
         }
-        sortProduct();
+        Comparator<Product> pSort = new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                return o1.getpID().compareTo(o2.getpID());
+            }
+        };
+        Collections.sort(temp, pSort);
         view(pDAO.getAll(), productMenu);
     }
 
     public void traverserOrder() {
-        if (oDAO.getAll() == null) {
-            System.out.println("Empty List !!!");
+        List<Order> temp = dm.getOrderFile();
+        if (temp.isEmpty()) {
+            System.out.println("Empty list !!!");
             return;
         }
-        view(oDAO.getAll(), orderMenu);
+        Comparator<Order> orderSort = new Comparator<Order>() {
+            @Override
+            public int compare(Order o1, Order o2) {
+                return o1.getoID().compareTo(o2.getoID());
+            }
+        };
+        Collections.sort(temp, orderSort);
+        view(temp, orderMenu);
+    }
+
+    public void trarverseOrderPendingFile() {
+        List<Order> temp = dm.getOrderFile();
+        if (temp == null) {
+            System.out.println("Empty file !!!");
+            return;
+        } else {
+            Comparator<Order> orderSort = new Comparator<Order>() {
+                @Override
+                public int compare(Order o1, Order o2) {
+                    return o1.getoID().compareTo(o2.getoID());
+                }
+            };
+            Collections.sort(temp, orderSort);
+            System.out.println(orderMenu);
+            for (Order order : oDAO.getAll()) {
+                if (order.isStatus() == false) {
+                    view(order);
+                }
+            }
+        }
     }
 //    public void traverserCustomer() {
 //        cDAO.traverser();
@@ -386,33 +465,47 @@ public class StoreManagement {
             System.out.println("Empty list");
             return;
         }
+        sortOrder();
+        System.out.println(orderMenu);
         for (Order order : oDAO.getAll()) {
             if (order.isStatus() == false) {
-                System.out.println(orderMenu);
                 view(order);
             }
-        }
-    }
-
-    private <T extends IOutput> void view(T data) {
-        System.out.println(data.output());
-    }
-
-    private <T extends IOutput> void view(List<T> listData, String menuFormat) {
-        System.out.println(menuFormat);
-        for (T data : listData) {
-            view(data);
         }
     }
 
     public void traverserAscOrder() {
         List<Order> tempOrder = new ArrayList();
         tempOrder.addAll(sortAscOrder());
-        System.out.printf("|%-4s|%-20s|%-4s|%-5s|%-13s|%-14s|\n", "OID", "Name", "PID", "Quan", "Date Order", "Status");
+        System.out.printf("|%-4s|%-20s|%-4s|%-5s|%-20s|%-13s|%-14s|\n", "OID", "Name", "PID", "Quan","Sell Quan", "Date Order", "Status");
         for (Order order : tempOrder) {
             String status = order.isStatus() ? "Delivered" : "Not Delivered";
-            System.out.printf("|%-4s|%-20s|%-4s|%-5d|%-13s|%-14s|\n", order.getoID(), cDAO.read(order.getcID()).getcName().trim(), order.getpID(), order.getOrderQuantity(), order.getOrderDate(), status);
+            System.out.printf("|%-4s|%-20s|%-4s|%-5d|%-20f|%-13s|%-14s|\n", order.getoID(), cDAO.read(order.getcID()).getcName().trim(), order.getpID(), order.getOrderQuantity(),(float)(order.getOrderQuantity()*50.0/100.0) ,order.getOrderDate(), status);
         }
+    }
+
+    public void shutdownAutoUpdate() {
+        dm.stopAutoUpdate();
+    }
+
+    public void startAutoUpdate() {
+        dm.startAutoUpdate();
+    }
+
+    public void saveOrderToFile() {
+        dm.saveOrderToFile();
+    }
+
+    public void saveCustomerToFile() {
+        dm.saveCustomerToFile();
+    }
+
+    public void saveProductToFile() {
+        dm.saveProductToFile();
+    }
+
+    public void loadAll() {
+        dm.loadFromFile();
     }
 
     // PRIVATE ZONE : HERE IS THE PLACE STORE LOCAL METHOD
@@ -432,55 +525,51 @@ public class StoreManagement {
     }
 
     private void sortProduct() {
-        if (pDAO.getAll() == null) {
-            return;
-        }
-        int size = pDAO.getAll().size();
-        for (int i = 0; i < size; i++) {
-            for (int j = i + 1; j < size; j++) {
-                Product o1 = pDAO.getAll().get(i);
-                Product o2 = pDAO.getAll().get(j);
-                if (o1.getpID().compareTo(o2.getpID()) == 1) {
-                    pDAO.getAll().set(i, o2);
-                    pDAO.getAll().set(j, o1);
-                }
-            }
+        if (pDAO.getAll() != null) {
+            pDAO.getAll().sort(new Product());
         }
     }
 
     private void sortCustomer() {
-        if (cDAO.getAll() == null) {
-            return;
+        if (pDAO.getAll() != null) {
+            cDAO.getAll().sort(new Customer());
         }
-        int size = cDAO.getAll().size();
-        for (int i = 0; i < size; i++) {
-            for (int j = i + 1; j < size; j++) {
-                Customer o1 = cDAO.getAll().get(i);
-                Customer o2 = cDAO.getAll().get(j);
-                if (o1.getcID().compareTo(o2.getcID()) == 1) {
-                    cDAO.getAll().set(i, o2);
-                    cDAO.getAll().set(j, o1);
-                }
-            }
+    }
+
+    private void sortOrder() {
+        if (oDAO.getAll() != null) {
+            oDAO.getAll().sort(new Order());
         }
     }
 
     private List<Order> sortAscOrder() {
-        List<Order> temp = new ArrayList();
-        temp.addAll(oDAO.getAll());
+        List<Order> temp = dm.getOrderFile();
         int size = temp.size();
         for (int i = 0; i < size; i++) {
-            for (int j = i; j < size; j++) {
+            for (int j = i + 1; j < size; j++) {
                 Order o1 = temp.get(i);
                 Order o2 = temp.get(j);
-                Customer co1 = cDAO.read(o1.getcID());
-                Customer co2 = cDAO.read(o2.getcID());
-                if (co1 != null || co2 != null) {
-                    if (co1.getcName().compareTo(co2.getcName()) == 1) {
-                        temp.set(i, o2);
-                        temp.set(j, o1);
-                    }
+                Date date1 = null;
+                Date date2 = null;
+                try{
+                    date1 = new SimpleDateFormat("dd-MM-yyyy").parse(o1.getOrderDate());
+                    date2 = new SimpleDateFormat("dd-MM-yyyy").parse(o2.getOrderDate());
+                }catch(Exception e){
+                    e.printStackTrace();
                 }
+
+                if (date1.compareTo(date2) < 0) {
+                    temp.set(i, o2);
+                    temp.set(j, o1);
+                }
+//                Customer co1 = cDAO.read(o1.getcID());
+//                Customer co2 = cDAO.read(o2.getcID());
+//                if (co1 != null || co2 != null) {
+//                    if (co1.getcName().compareTo(co2.getcName()) < 0) {
+//                        temp.set(i, o2);
+//                        temp.set(j, o1);
+//                    }
+//                }
             }
         }
         return temp;
@@ -508,63 +597,14 @@ public class StoreManagement {
         } while (true);
     }
 
-    public void startAutoSaving() {
-        Runnable cSave;
-        Runnable oSave;
-        Runnable pSave;
-        cSave = () -> {
-            int size = (cDAO.getAll() == null) ? 0 : cDAO.getAll().size();
-            do {
-                if (size < cDAO.getAll().size() || size > cDAO.getAll().size()) {
-                    saveCustomerToFile();
-                    try {
-                        Thread.currentThread().sleep(30000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                try {
-                    Thread.currentThread().sleep(3000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } while (true);
-        };
-        oSave = () -> {
-            int size = (oDAO.getAll() == null) ? 0 : oDAO.getAll().size();
-            do {
-                if (size != oDAO.getAll().size()) {
-                    saveOrderToFile();
-                    try {
-                        Thread.currentThread().sleep(30000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-            } while (true);
-        };
-        pSave = () -> {
-            do {
-                saveProductToFile();
-                try {
-                    Thread.currentThread().sleep(30000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(StoreManagement.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } while (true);
-        };
-        updateCFile = new Thread(cSave);
-        updateOFile = new Thread(oSave);
-        updatePFile = new Thread(pSave);
-        updateCFile.start();
-        updateOFile.start();
-        updatePFile.start();
+    private <T extends IOutput> void view(T data) {
+        System.out.println(data.output());
     }
 
-    public void stopAutoUpdate() {
-        updateCFile.yield();
-        updateOFile.yield();
-        updatePFile.yield();
+    private <T extends IOutput> void view(List<T> listData, String menuFormat) {
+        System.out.println(menuFormat);
+        for (T data : listData) {
+            view(data);
+        }
     }
 }

@@ -3,13 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.model;
+import java.util.Comparator;
 import my.util.Validate;
 
 /**
  *
  * @author AnataArisa
  */
-public class Order implements Comparable<Order>,IOutput {
+public class Order implements Comparable<Order>,IOutput,Comparator<Order> {
     private String oID;
     private String cID;
     private String pID;
@@ -18,15 +19,19 @@ public class Order implements Comparable<Order>,IOutput {
     private boolean status;
 
     public Order(String oID, String cID, String pID, int orderQuantity, String orderDate, boolean status) {
-        this.oID = oID;
-        this.cID = cID;
-        this.pID = pID;
+        this.oID = oID.trim();
+        this.cID = cID.trim();
+        this.pID = pID.trim();
         this.orderQuantity = orderQuantity;
-        this.orderDate = orderDate;
+        this.orderDate = orderDate.trim();
         this.status = status;
     }
     public Order(String ID){
         this.oID = ID.trim();
+    }
+
+    public Order() {
+        
     }
 
     public String getoID() {
@@ -85,7 +90,7 @@ public class Order implements Comparable<Order>,IOutput {
     public void importOrder(){
         setOrderQuantity(Validate.intValidation("Enter quantity: ", 1));
         setOrderDate(Validate.dateTimeValidate("Enter order date: ", "dd-MM-yyyy"));
-        setStatus(Validate.booleanValidation("Enter status: "));
+        setStatus(Validate.booleanValidationCanSkip("Enter status: "));
     }
     
     @Override
@@ -97,6 +102,11 @@ public class Order implements Comparable<Order>,IOutput {
     public String output(){
         String status = (isStatus())? "Delivered":"Not Delivered";
         return String.format("|%-4s|%-4s|%-4s|%-5d|%-13s|%-14s|",getoID(),getcID(),getpID(),getOrderQuantity(),getOrderDate(),status);
+    }
+
+    @Override
+    public int compare(Order o1, Order o2) {
+        return o1.getoID().compareTo(o2.getoID());
     }
 
 }
